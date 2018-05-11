@@ -23,15 +23,15 @@ CL_init(); // Importation of celestLab library
 
 // Part 1 --- Definition of global variables ----------------------------------
 // Part 1a --- initialization of orbit related parameters ---------------------
-aa  = 10000;
-ec  = 0.5;
-in  = 0.0;
-ra  = 0.0;
-wp  = 0.0;
+aa  = 7000;
+ec  = 0.01;
+in  = 15.0;
+ra  = 5.0;
+wp  = 20.0;
 ta  = 0.00;
-TA  = linspace(0,2*%pi,1000); // True anomaly values for one orbit [rad]
+TA  = linspace(0,2*%pi,100); // True anomaly values for one orbit [rad]
 kepCoeff = [aa ec ra in wp ta]; // Keplerian elements of the orbit, values are to be retrieved from the user in a later version 
-// aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ta-true anomaly [deg]
+// aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ta-true anomaly [rad]
 // Part 1b --- initialization of frame related parameters ---------------------
 AU      = 149597870.700  // Definition of an astronomical unit [km]
 RSun    = 695700         // Radius of the Sun [km]
@@ -77,42 +77,26 @@ endfunction
 function[r,v] = Kep2Cart(coe)
     // Copyright (c) York University 2018   Authors: Matthieu D. and Jessie A.
     // This function converts Keplerian orbital elements to Cartesian position and velocity state vectors
+    // Uses https://downloads.rene-schwarz.com/download/M001-Keplerian_Orbit_Elements_to_Cartesian_State_Vectors.pdf as source
     // Inputs: coe = [semimajor axis, eccentricity, RAAN, inclination, argument of perigee, true anomaly]
     mu   = 398600; // Standard gravitational parameter of the Earth [km]
-    a    = coe(1); // Semimajor axis [km]
-    e    = coe(2); // Eccentricity 
+    aa    = coe(1); // Semimajor axis [km]
+    ec    = coe(2); // Eccentricity 
     RA   = coe(3)*%pi/180; // Right ascension of the ascending node [rad]
-    incl = coe(4)*%pi/180; // Inclination [rad]
-    w    = coe(5)*%pi/180; // Argument of perigee [rad]
-    TA   = coe(6); // True anomaly
-
-    b = sqrt((a^2)*(1 - e^2)); // Computes the semiminor axis
-    p = (b^2)/a; // Computes the semilatus rectum
-    r_TA = p/(1 + e*cos(TA)); // Computes the magnitude of radius vector
-    v_TA = sqrt(mu*((2/r_TA) - (1/a))); // Computes the magnitude of velocity vector
-    h = r_TA*v_TA; // Computes the specific angular momentum of the orbit
-
-    rp = (h^2/mu) * (1/(1 + e*cos(TA))) * (cos(TA)*[1;0;0] + sin(TA)*[0;1;0]);
-    vp = (mu/h) * (-sin(TA)*[1;0;0] + (e + cos(TA))*[0;1;0]);
-
-    R3_W = [ cos(RA)  sin(RA)  0
-    -sin(RA)  cos(RA)  0
-    0 0 1];
-
-    R1_i = [1       0          0
-    0   cos(incl)  sin(incl)
-    0  -sin(incl)  cos(incl)];
-
-    R3_w = [ cos(w)  sin(w)  0
-    -sin(w)  cos(w)  0
-    0 0 1];
-
-    Q_pX = (R3_w*R1_i*R3_W)';
-
-    r = Q_pX*rp;
-    v = Q_pX*vp;
-
-    r = r'; v = v';
+    in = coe(4)*%pi/180; // Inclination [rad]
+    wp    = coe(5)*%pi/180; // Argument of perigee [rad]
+    ta   = coe(6); // True anomaly
+    CL_init(); // Initialization of celestLab
+    mu = 398600; // Initialize standard gravitational parameter for this function [km2 s-3]
+    ea = CL_kp_v2E(ec,ta) // Compute the eccentric anomaly using celestLab function
+    r_c = aa*(1 - ec*cos(ea)); // Computes the distance to the central body using the eccentric anomaly, check degrees/radians could be source of error or incorrect value
+    o_pos = r_c.*[cos(ta), sin(ta), 0]; // Creates an array for the position vector in the orbital frame
+    o_vel = [(-sin(ea)*sqrt(mu*aa)/r_c), (sqrt(1 - ec^2)*cos(ea)*sqrt(mu*aa)/r_c), 0]; // Creates an array for the velocity vector in the orbital frame
+    r = zeros(1,3); // Initialize radius vector
+    r(1) = o_pos(1)*(cos(wp)*cos(RA) - sin(wp)*cos(in)*sin(RA)) - o_pos(2)*(sin(wp)*cos(RA) + cos(wp)*cos(in)*sin(RA)); // Computes x component of radius vector
+    r(2) = o_pos(1)*(cos(wp)*sin(RA) + sin(wp)*cos(in)*cos(RA)) + o_pos(2)*(cos(wp)*cos(in)*cos(RA) - sin(wp)*sin(RA)); // Computes y component of radius vecotr
+    r(3) = o_pos(1)*(sin(wp)*sin(in)) + o_pos(2)*(cos(wp)*sin(in)); // Computes z component of radius vector 
+    v = 0; // Temporary, will be changed in the future
 endfunction
 //  Part 3 --- Creation of the solar system environment -----------------------
 //  Part 3a --- Creation of the Earth spheroid --------------------------------
@@ -135,9 +119,10 @@ vel = zeros(3,length(TA)); // Matrix storing components of velocity vector
 for i = 1:length(TA)
     kepCoeff(6) = TA(i); // Changes true anomaly
     [rad_hold,vel_hold] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-    rad(1,i) = rad_hold(1);
-    rad(2,i) = rad_hold(2);
-    rad(3,i) = rad_hold(3);
+    rad(1,i) = rad_hold(1); // |
+    rad(2,i) = rad_hold(2); // | Sets the values just component to their space in the radius array
+    rad(3,i) = rad_hold(3); // |
 end
-param3d(rad(1,:),rad(2,:),rad(3,:));
+kepCoeff(6) = ta; // Changes true anomaly back to initial value
+param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
 
