@@ -18,6 +18,7 @@
 //      Part 3c : Creation of the 'space' environment
 //      PART 3d : Insert STL model of spacecraft
 //      Part 3e : Insertion of the orbital trajectory
+//      Part 3f : Motion of the satellite
 // celestLab demo are located in C:\Users\matth\AppData\Roaming\Scilab\scilab-5.5.2\atoms\x64\celestlab\3.2.1\demos
 clear; clc; clf; // Clear variable list, console, and figures
 CL_init(); // Importation of celestLab library   
@@ -131,7 +132,6 @@ end
 kepCoeff(6) = ma; // Changes true anomaly back to initial value
 param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
 // Part 3f --- Motion of the satellite ----------------------------------------
-
 for i = 1:length(TA)
     delete()
     kepCoeff(6) = TA(i); // Changes true anomaly
@@ -144,4 +144,3 @@ for i = 1:length(TA)
     plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
     sleep(100)
 end
-
