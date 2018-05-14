@@ -24,7 +24,7 @@ CL_init(); // Importation of celestLab library
 // Part 1 --- Definition of global variables ----------------------------------
 // Part 1a --- initialization of orbit related parameters ---------------------
 desc = list(..
-CL_defParam("Semimajor axis", val = 7500),..
+CL_defParam("Semimajor axis", val = 7500,units=['km']),..
 CL_defParam("Eccentricity", val=0.0003293),..
 CL_defParam("inclination",val=51.6397,units=['deg']),..
 CL_defParam("RAAN", val=196.5549,units=['deg']),..
@@ -114,10 +114,10 @@ stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path lead
 t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-t.x = (t.x*enlarge) + radV(1); // |
+t.x = (t.x*enlarge) - radV(1); // |
 t.y = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
 t.z = (t.z*enlarge) + radV(3); // |
-plot3d(t.x,t.y,list(t.z,tcolor)); // Plots the STL model in the frame
+plot3d(-t.x,t.y,list(t.z,tcolor)); // Plots the STL model in the frame
 //  Part 3e --- Insertion of the orbital trajectory ---------------------------
 rad = zeros(3,length(TA)); // Matrix storing components of radius vector
 vel = zeros(3,length(TA)); // Matrix storing components of velocity vector
