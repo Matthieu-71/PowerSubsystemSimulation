@@ -1,17 +1,17 @@
-// EarthOrbiterSystem v 0.0.2
+// EarthOrbiterSystem v 0.0.3
 // This program models the orbital trajectory of a CAD model about the Earth
-// Authours : Matthieu D. Jessie A. Arvin T.
+// Authours : Arvin T. Matthieu D. Jessie A. 
 // Created on 11 May 2018
 // Last modified 14 May 2018
 // Table of contents 
 //  Part 1 : Definition of global variables
 //      Part 1a : initialization of orbit related variables
 //      Part 1b : initialization of frame related variables
-//      Part 1c : initialization of 3D spacecraft model related variables
+//      Part 1c : time and perturbation related parameters
+//      Part 1d : initialization of 3D spacecraft model related variables
 //  Part 2 : Definition of proprietary functions
 //      Part 2a : trace_traj function
 //      Part 2b : plot_sphere function
-//      Part 2c : Kep2Cart function
 //  Part 3 : Creation of the solar system environment
 //      Part 3a : Creation of the Earth spheroid
 //      Part 3b : Creation of the 'space' environment
@@ -30,11 +30,10 @@ CL_defParam("Eccentricity",             val = 0.0003293),..
 CL_defParam("Inclination",              val = 51.6397,    units=['deg']),..
 CL_defParam("RAAN",                     val = 196.5549,   units=['deg']),..
 CL_defParam("Argument of Perigee",      val = 67.2970,    units=['deg']),..
-CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']),..
-CL_defParam("Number of orbits",         val = 1));
-[aa, ec, in, ra, wp, ma, numOrb,OK] = CL_inputParam(desc) 
+CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']));
+[aa, ec, in, ra, wp, ma] = CL_inputParam(desc) 
 TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
-kepCoeff = [aa ec ra in wp ma]; // Keplerian elements of the orbit
+kepCoeff0 = [aa; ec; (in* %pi/180); (wp* %pi/180); (ra* %pi/180); (ma* %pi/180)]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 // Part 1b --- initialization of frame related parameters ---------------------
 // Use the celestLab constants for these
@@ -43,7 +42,22 @@ RSun    = 695700                 // Radius of the Sun [km]
 REarth  = 6378                   // Radius of the Earth [km]
 LSun    = 3.828e26               // Luminosity of the Sun [W/m^2]
 frame   = 10e3;                  // Dimension of the data bounds [km]
-//  Part 1c --- initialization of variables related to the 3D model of the spacecraft
+// Part 1c----time and perturbation related parameters-------------------------
+desc2 = list(..
+CL_defParam("Year", val = 2018),..
+CL_defParam("Month", val=5),..
+CL_defParam("Day",val=14),..
+CL_defParam("Hour",val=12),..
+CL_defParam("Minute",val=0),..
+CL_defParam("Second",val=0),..
+CL_defParam("Mission Duration",val=1,units=['days']));
+[YYYY, MM, DD, HH,tMin,tSec,xduration] = CL_inputParam(desc2);
+ 
+tstep=30; //timestep in seconds
+cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec); 
+cjd = cjd0 + (0 : tstep/86400 : xduration); 
+kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "o"); 
+// Part 1d --- initialization of variables related to the 3D model of the spacecraft
 enlarge = 10; // Enlargement factor to increase the volume of the model
 //  Part 2 --- Definition of proprietary functions ----------------------------
 //  Part 2a --- trace_traj function -------------------------------------------
@@ -78,31 +92,7 @@ function [] = plot_sphere(r,n,d)
     a.isoview = 'on'; // Changes the view to isometric 
     a.grid = [1 1]; // Adds grid lines to the graphical object
 endfunction
-//  Part 2c --- Kep2Cart function ---------------------------------------------
-function[r,v] = Kep2Cart(coe)
-    // Copyright (c) York University 2018   Authors: Matthieu D. and Jessie A.
-    // This function converts Keplerian orbital elements to Cartesian position and velocity state vectors
-    // Uses https://downloads.rene-schwarz.com/download/M001-Keplerian_Orbit_Elements_to_Cartesian_State_Vectors.pdf as source
-    // Inputs: coe = [semimajor axis, eccentricity, RAAN, inclination, argument of perigee, true anomaly]
-    aa  = coe(1); // Semimajor axis [km]
-    ec  = coe(2); // Eccentricity 
-    RA  = coe(3)*%pi/180; // Right ascension of the ascending node [rad]
-    in  = coe(4)*%pi/180; // Inclination [rad]
-    wp  = coe(5)*%pi/180; // Argument of perigee [rad]
-    ma  = coe(6); // True anomaly
-    mu = CL_dataGet("body.Earth.mu")/10^9; // Initialize standard gravitational parameter for this function [km2 s-3]
-    ta = CL_kp_M2v(ec,ma) // Compute the mean anomaly using celestLab function 
-    ea = CL_kp_v2E(ec,ta) // Compute the eccentric anomaly using celestLab function
-    r_c = aa*(1 - ec*cos(ea)); // Computes the distance to the central body using the eccentric anomaly, check degrees/radians could be source of error or incorrect value
-    o_pos = r_c.*[cos(ta), sin(ta), 0]; // Creates an array for the position vector in the orbital frame
-    o_vel = [(-sin(ea)*sqrt(mu*aa)/r_c), (sqrt(1 - ec^2)*cos(ea)*sqrt(mu*aa)/r_c), 0]; // Creates an array for the velocity vector in the orbital frame
-    r = zeros(1,3); // Initialize radius vector
-    v = zeros(1,3); // Initialize velocity vector
-    r(1) = o_pos(1)*(cos(wp)*cos(RA) - sin(wp)*cos(in)*sin(RA)) - o_pos(2)*(sin(wp)*cos(RA) + cos(wp)*cos(in)*sin(RA)); // Computes x component of radius vector
-    r(2) = o_pos(1)*(cos(wp)*sin(RA) + sin(wp)*cos(in)*cos(RA)) + o_pos(2)*(cos(wp)*cos(in)*cos(RA) - sin(wp)*sin(RA)); // Computes y component of radius vecotr
-    r(3) = o_pos(1)*(sin(wp)*sin(in)) + o_pos(2)*(cos(wp)*sin(in)); // Computes z component of radius vector 
-    v = 0; // Temporary, will be changed in the future
-endfunction
+
 //  Part 3 --- Creation of the solar system and simulation --------------------
 //  Part 3a --- Creation of the Earth spheroid --------------------------------
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
@@ -113,7 +103,7 @@ rad = zeros(3,length(TA)); // Matrix storing components of radius vector
 vel = zeros(3,length(TA)); // Matrix storing components of velocity vector
 for i = 1:length(TA)
     kepCoeff(6) = TA(i); // Changes true anomaly
-    [rad_hold,vel_hold] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+    [rad_hold,vel_hold] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
     rad(1,i) = rad_hold(1); // |
     rad(2,i) = rad_hold(2); // | Sets the values just component to their space in the radius array
     rad(3,i) = rad_hold(3); // |
@@ -121,21 +111,21 @@ end
 kepCoeff(6) = ma; // Changes true anomaly back to initial value
 param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
 //  PART 3d --- Insertion STL model of spacecraft --------------------------------
-exec("C:\Users\matth\Documents\SciLab_CelestLab_work\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
+exec("C:\Scilab\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
 stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path leading the the desiring STL file, this needs to be changed to fit any user
 t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
-[radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+[radV,velV] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
 xIns = (t.x*enlarge) - radV(1); // |
 yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
 zIns = (t.z*enlarge) + radV(3); // |
 plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 // Part 3e --- Motion of the satellite ----------------------------------------
-for j = 1:numOrb // For the number of orbits 
+for j = 1:xduration // For the number of orbits 
     for i = 1:length(TA) // For one orbit
         delete() // Deletes the last graphical element
         kepCoeff(6) = TA(i); // Changes true anomaly
-        [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+        [radV,velV] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
         xIns = (t.x*enlarge) - radV(1); // |
         yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
         zIns = (t.z*enlarge) + radV(3); // |
