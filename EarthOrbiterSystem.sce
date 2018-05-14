@@ -13,27 +13,28 @@
 //      Part 2b : plot_sphere function
 //      Part 2c : Kep2Cart function
 //  Part 3 : Creation of the solar system environment
-//      Part 3a : Input of Keplerian elements 
-//      Part 3b : Creation of the Earth spheroid
-//      Part 3c : Creation of the 'space' environment
+//      Part 3a : Creation of the Earth spheroid
+//      Part 3b : Creation of the 'space' environment
+//      Part 3c : Insertion of the orbital trajectory
 //      PART 3d : Insert STL model of spacecraft
-//      Part 3e : Insertion of the orbital trajectory
-//      Part 3f : Motion of the satellite
+//      Part 3e : Motion of the satellite
 // celestLab demo are located in C:\Users\matth\AppData\Roaming\Scilab\scilab-5.5.2\atoms\x64\celestlab\3.2.1\demos
 clear; clc; clf; // Clear variable list, console, and figures
 CL_init(); // Importation of celestLab library   
 // Part 1 --- Definition of global variables ----------------------------------
 // Part 1a --- initialization of orbit related parameters ---------------------
+// This part promts the user to input the Keplerian orbital element, by default the program uses that of the ISS
 desc = list(..
-CL_defParam("Semimajor axis", val = 7500,units=['km']),..
-CL_defParam("Eccentricity", val=0.0003293),..
-CL_defParam("inclination",val=51.6397,units=['deg']),..
-CL_defParam("RAAN", val=196.5549,units=['deg']),..
-CL_defParam("Argument of Perigee",val=67.2970,units=['deg']),...
-CL_defParam("Mean anomaly at epoch",val=292.8531,units=['deg']));
-[aa, ec, in, ra, wp, ma, OK] = CL_inputParam(desc) 
-TA  = linspace(0,2*%pi,100); // True anomaly values for one orbit [rad]
-kepCoeff = [aa ec ra in wp ma]; // Keplerian elements of the orbit, values are to be retrieved from the user in a later version 
+CL_defParam("Semimajor axis",           val = 6782.4744,     units=['km']),..
+CL_defParam("Eccentricity",             val = 0.0003293),..
+CL_defParam("Inclination",              val = 51.6397,    units=['deg']),..
+CL_defParam("RAAN",                     val = 196.5549,   units=['deg']),..
+CL_defParam("Argument of Perigee",      val = 67.2970,    units=['deg']),..
+CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']),..
+CL_defParam("Number of orbits",         val = 1));
+[aa, ec, in, ra, wp, ma, numOrb,OK] = CL_inputParam(desc) 
+TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
+kepCoeff = [aa ec ra in wp ma]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 // Part 1b --- initialization of frame related parameters ---------------------
 // Use the celestLab constants for these
@@ -102,24 +103,12 @@ function[r,v] = Kep2Cart(coe)
     r(3) = o_pos(1)*(sin(wp)*sin(in)) + o_pos(2)*(cos(wp)*sin(in)); // Computes z component of radius vector 
     v = 0; // Temporary, will be changed in the future
 endfunction
-//  Part 3 --- Creation of the solar system environment -----------------------
+//  Part 3 --- Creation of the solar system and simulation --------------------
 //  Part 3a --- Creation of the Earth spheroid --------------------------------
-
-//  Part 3b --- Creation of the Earth spheroid --------------------------------
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
+//  Part 3b --- Creation of the 'space' environment ---------------------------
 xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
-//  Part 3c --- Creation of the 'space' environment ---------------------------
-//  PART 3d --- Insertion STL model of spacecraft --------------------------------
-exec("C:\Users\matth\Documents\SciLab_CelestLab_work\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
-stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path leading the the desiring STL file, this needs to be changed to fit any user
-t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
-tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
-[radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-xIns = (t.x*enlarge) - radV(1); // |
-yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
-zIns = (t.z*enlarge) + radV(3); // |
-plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-//  Part 3e --- Insertion of the orbital trajectory ---------------------------
+//  Part 3c --- Insertion of the orbital trajectory ---------------------------
 rad = zeros(3,length(TA)); // Matrix storing components of radius vector
 vel = zeros(3,length(TA)); // Matrix storing components of velocity vector
 for i = 1:length(TA)
@@ -131,16 +120,28 @@ for i = 1:length(TA)
 end
 kepCoeff(6) = ma; // Changes true anomaly back to initial value
 param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
-// Part 3f --- Motion of the satellite ----------------------------------------
-for i = 1:length(TA)
-    delete()
-    kepCoeff(6) = TA(i); // Changes true anomaly
-    [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-    xIns = (t.x*enlarge) - radV(1); // |
-    yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
-    zIns = (t.z*enlarge) + radV(3); // |
-    h = gca();
-    h.auto_clear = "off";
-    plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-    sleep(100)
+//  PART 3d --- Insertion STL model of spacecraft --------------------------------
+exec("C:\Users\matth\Documents\SciLab_CelestLab_work\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
+stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path leading the the desiring STL file, this needs to be changed to fit any user
+t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
+tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
+[radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+xIns = (t.x*enlarge) - radV(1); // |
+yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
+zIns = (t.z*enlarge) + radV(3); // |
+plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
+// Part 3e --- Motion of the satellite ----------------------------------------
+for j = 1:numOrb // For the number of orbits 
+    for i = 1:length(TA) // For one orbit
+        delete() // Deletes the last graphical element
+        kepCoeff(6) = TA(i); // Changes true anomaly
+        [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+        xIns = (t.x*enlarge) - radV(1); // |
+        yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
+        zIns = (t.z*enlarge) + radV(3); // |
+        h = gca(); // Gets the current graphic axes
+        h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
+        plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
+        sleep(1) // Pauses the loop for 10 ms
+    end
 end
