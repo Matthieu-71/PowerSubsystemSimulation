@@ -114,10 +114,10 @@ stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path lead
 t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-t.x = (t.x*enlarge) - radV(1); // |
-t.y = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
-t.z = (t.z*enlarge) + radV(3); // |
-plot3d(-t.x,t.y,list(t.z,tcolor)); // Plots the STL model in the frame
+xIns = (t.x*enlarge) - radV(1); // |
+yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
+zIns = (t.z*enlarge) + radV(3); // |
+plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 //  Part 3e --- Insertion of the orbital trajectory ---------------------------
 rad = zeros(3,length(TA)); // Matrix storing components of radius vector
 vel = zeros(3,length(TA)); // Matrix storing components of velocity vector
@@ -130,4 +130,18 @@ for i = 1:length(TA)
 end
 kepCoeff(6) = ma; // Changes true anomaly back to initial value
 param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
+// Part 3f --- Motion of the satellite ----------------------------------------
+
+for i = 1:length(TA)
+    delete()
+    kepCoeff(6) = TA(i); // Changes true anomaly
+    [radV,velV] = Kep2Cart(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
+    xIns = (t.x*enlarge) - radV(1); // |
+    yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
+    zIns = (t.z*enlarge) + radV(3); // |
+    h = gca();
+    h.auto_clear = "off";
+    plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
+    sleep(100)
+end
 
