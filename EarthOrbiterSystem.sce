@@ -35,7 +35,7 @@ CL_defParam("RAAN",                     val = 196.5549*%CL_deg2rad,   units=['ra
 CL_defParam("Argument of Perigee",      val = 67.2970*%CL_deg2rad,    units=['rad','deg']),..
 CL_defParam("Mean anomaly at epoch",    val = 292.8531*%CL_deg2rad,   units=['rad','deg']));
 [aa, ec, in, ra, wp, ma] = CL_inputParam(desc) 
-//TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
+TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
 kepCoeff0 = [aa; ec; in; wp; ra; ma]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 
@@ -127,7 +127,7 @@ param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
 //  PART 3d --- Insertion STL model of spacecraft --------------------------------
 exec("C:\Scilab\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
 stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path leading the the desiring STL file, this needs to be changed to fit any user
-t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
+t = stlread(fullfile(stlpath, "humanoid.stl"), "ascii"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 [radV,velV] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
 xIns = (t.x*enlarge) - radV(1,1); // |
