@@ -27,13 +27,13 @@ CL_init(); // Importation of celestLab library
 desc = list(..
 CL_defParam("Semimajor axis",           val = 6782.4744,     units=['km']),..
 CL_defParam("Eccentricity",             val = 0.0003293),..
-CL_defParam("Inclination",              val = 51.6397,    units=['deg']),..
-CL_defParam("RAAN",                     val = 196.5549,   units=['deg']),..
-CL_defParam("Argument of Perigee",      val = 67.2970,    units=['deg']),..
-CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']));
+CL_defParam("Inclination",              val = 51.6397 *%CL_deg2rad,    units=['rad','deg']),..
+CL_defParam("RAAN",                     val = 196.5549*%CL_deg2rad,   units=['rad','deg']),..
+CL_defParam("Argument of Perigee",      val = 67.2970*%CL_deg2rad,    units=['rad','deg']),..
+CL_defParam("Mean anomaly at epoch",    val = 292.8531*%CL_deg2rad,   units=['rad','deg']));
 [aa, ec, in, ra, wp, ma] = CL_inputParam(desc) 
-TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
-kepCoeff0 = [aa; ec; (in* %pi/180); (wp* %pi/180); (ra* %pi/180); (ma* %pi/180)]; // Keplerian elements of the orbit
+//TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
+kepCoeff0 = [aa; ec; in; wp; ra; ma]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 // Part 1b --- initialization of frame related parameters ---------------------
 // Use the celestLab constants for these
@@ -43,6 +43,7 @@ REarth  = 6378                   // Radius of the Earth [km]
 LSun    = 3.828e26               // Luminosity of the Sun [W/m^2]
 frame   = 10e3;                  // Dimension of the data bounds [km]
 // Part 1c----time and perturbation related parameters-------------------------
+//prompt the user for mission start time, date, and duration
 desc2 = list(..
 CL_defParam("Year", val = 2018),..
 CL_defParam("Month", val=5),..
@@ -50,13 +51,15 @@ CL_defParam("Day",val=14),..
 CL_defParam("Hour",val=12),..
 CL_defParam("Minute",val=0),..
 CL_defParam("Second",val=0),..
-CL_defParam("Mission Duration",val=1,units=['days']));
-[YYYY, MM, DD, HH,tMin,tSec,xduration] = CL_inputParam(desc2);
+CL_defParam("Mission Duration",val=1,units=['days']),..
+CL_defParam("Time Step",val=10,units=['seconds']));
+[YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
  
-tstep=30; //timestep in seconds
 cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec); 
 cjd = cjd0 + (0 : tstep/86400 : xduration); 
-kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "o"); 
+
+//J2 Perturbation model
+kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); 
 // Part 1d --- initialization of variables related to the 3D model of the spacecraft
 enlarge = 10; // Enlargement factor to increase the volume of the model
 //  Part 2 --- Definition of proprietary functions ----------------------------
@@ -116,22 +119,20 @@ stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path lead
 t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 [radV,velV] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-xIns = (t.x*enlarge) - radV(1); // |
-yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
-zIns = (t.z*enlarge) + radV(3); // |
+xIns = (t.x*enlarge) - radV(1,1); // |
+yIns = (t.y*enlarge) + radV(2,1); // | Changes the position of all vertices to place the object in the frame
+zIns = (t.z*enlarge) + radV(3,1); // |
 plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 // Part 3e --- Motion of the satellite ----------------------------------------
-for j = 1:xduration // For the number of orbits 
-    for i = 1:length(TA) // For one orbit
+
+    for i = 1:length(radV) // For mission duration
         delete() // Deletes the last graphical element
-        kepCoeff(6) = TA(i); // Changes true anomaly
-        [radV,velV] = CL_oe_kep2car(kepCoeff); // Convert the Kepler coefficients to state vector to place the object in the frame
-        xIns = (t.x*enlarge) - radV(1); // |
-        yIns = (t.y*enlarge) + radV(2); // | Changes the position of all vertices to place the object in the frame
-        zIns = (t.z*enlarge) + radV(3); // |
+        xIns = (t.x*enlarge) - radV(1,i); // |
+        yIns = (t.y*enlarge) + radV(2,i); // | Changes the position of all vertices to place the object in the frame
+        zIns = (t.z*enlarge) + radV(3,i); // |
         h = gca(); // Gets the current graphic axes
         h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
         plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-        sleep(1) // Pauses the loop for 10 ms
+        sleep(1000) // Pauses the loop for 10 ms
     end
 end
