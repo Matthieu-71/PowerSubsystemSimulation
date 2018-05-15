@@ -52,7 +52,7 @@ frame   = 10e3;                  // Dimension of the data bounds [km]
 desc2 = list(..
 CL_defParam("Year", val = 2018),..
 CL_defParam("Month", val=5),..
-CL_defParam("Day",val=14),..
+CL_defParam("Day",val=15),..
 CL_defParam("Hour",val=12),..
 CL_defParam("Minute",val=0),..
 CL_defParam("Second",val=0),..
@@ -123,6 +123,7 @@ for i = 1:length(TA)
 end
 kepCoeff(6) = ma; // Changes true anomaly back to initial value
 param3d(rad(1,:),rad(2,:),rad(3,:)); // Plots the entire orbit
+set(gca(),"isoview",'on')
 
 //  PART 3d --- Insertion STL model of spacecraft --------------------------------
 exec("C:\Scilab\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
