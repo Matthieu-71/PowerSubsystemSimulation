@@ -2,7 +2,7 @@
 // This program models the orbital trajectory of a CAD model about the Earth
 // Authours : Arvin T. Matthieu D. Jessie A. 
 // Created on 11 May 2018
-// Last modified 14 May 2018
+// Last modified 15 May 2018
 // Table of contents 
 //  Part 1 : Definition of global variables
 //      Part 1a : initialization of orbit related variables
@@ -49,15 +49,16 @@ frame   = 10e3;                  // Dimension of the data bounds [km]
 
 // Part 1c----time and perturbation related parameters-------------------------
 //prompt the user for mission start time, date, and duration
+dt = getdate(); // Gets date and time information
 desc2 = list(..
-CL_defParam("Year", val = 2018),..
-CL_defParam("Month", val=5),..
-CL_defParam("Day",val=15),..
-CL_defParam("Hour",val=12),..
-CL_defParam("Minute",val=0),..
-CL_defParam("Second",val=0),..
-CL_defParam("Mission Duration",val=1,units=['days']),..
-CL_defParam("Time Step",val=10,units=['seconds']));
+CL_defParam("Start year",           val = dt(1)),..
+CL_defParam("Start month",          val = dt(2)),..
+CL_defParam("Start day",            val = dt(6)),..
+CL_defParam("Start hour",           val = dt(7)),..
+CL_defParam("Start minute",         val = dt(8)),..
+CL_defParam("Start second",         val = dt(9)),..
+CL_defParam("Mission duration",     val = 1,        units = ['days']),..
+CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
  
 cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec); 
