@@ -1,0 +1,26 @@
+function stlfileslib = startModule()
+
+    TOOLBOX_NAME  = "stlfiles";
+    TOOLBOX_TITLE = "STL files";
+
+  mprintf("Start " + TOOLBOX_TITLE + "\n");
+
+  if isdef("stlfileslib") then
+    warning("STL files library is already loaded");
+    return;
+  end
+
+  etc_tlbx  = get_absolute_file_path("stlfiles.start");
+  etc_tlbx  = getshortpathname(etc_tlbx);
+  root_tlbx = strncpy( etc_tlbx, length(etc_tlbx)-length("\etc\") );
+
+//Load  functions library
+// =============================================================================
+  mprintf("Load macros\n");
+  pathmacros = pathconvert( root_tlbx ) + "macros" + filesep();
+  stlfileslib = lib(pathmacros);
+
+endfunction
+
+stlfileslib = startModule();
+clear startModule; // remove startModule on stack

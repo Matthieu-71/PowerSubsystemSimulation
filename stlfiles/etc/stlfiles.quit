@@ -1,0 +1,11 @@
+function quitModule()
+
+    etc_tlbx  = get_absolute_file_path("stlfiles.quit");
+    etc_tlbx  = getshortpathname(etc_tlbx);
+    root_tlbx = strncpy( etc_tlbx, length(etc_tlbx)-length("\etc\") );
+
+endfunction
+
+
+quitModule();
+clear quitModule;
