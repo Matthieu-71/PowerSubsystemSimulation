@@ -4,10 +4,6 @@
 // Created on 16 May 2018
 // Last modified 16 May 2018
 
-// Expecting the following : 
-//      x : -10 -10 -10 -10  10  10  10  10
-//      y :   1   1 -19 -19   1   1 -19 -19
-//      z :  -9  11  11  -9  11  11  -9  11
 xVertices = t.x(:,activSurfs) // Gets the x position of the vertices of the solar panel surfaces
 yVertices = t.y(:,activSurfs) // Gets the y position of the vertices of the solar panel surfaces
 zVertices = t.z(:,activSurfs) // Gets the z position of the vertices of the solar panel surfaces

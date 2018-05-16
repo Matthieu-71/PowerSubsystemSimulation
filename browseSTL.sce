@@ -124,8 +124,10 @@ h_edit3 = uicontrol(f,'style','edit', 'position', [100 80 425 20],'callback', '[
 h_push3 = uicontrol(f,'style','pushbutton', 'position', [525 80 75 20],'callback', '[inFilePath] = browseINfile(crntPath)'); // GUI object for output file path browse
 h_text4 = uicontrol(f,'style','text', 'position', [0 60 280 20]); // GUI object for STL format prompt
 h_text5 = uicontrol(f,'style','text', 'position', [0 40 280 20]); // GUI object for input file presence prompt
+h_text6 = uicontrol(f,'style','text', 'position', [0 20 280 20]); // GUI object for animation prompt
 h_bnSlt = uicontrol(f,'style','checkbox', 'position', [280 60 20 20], 'callback', '[isBinary] = binCheckBox(isBinary)'); // GUI object to indicate binary format
 h_inSlt = uicontrol(f,'style','checkbox', 'position', [280 40 20 20], 'callback', '[inUsed] = inpCheckBox(inUsed)'); // GUI object to indicate presence of input file
+h_anSlt = uicontrol(f,'style','checkbox', 'position', [280 20 20 20], 'callback', '[inUsed] = aniCheckBox(inUsed)'); // GUI object to indicate animation desire
 h_push4 = uicontrol(f,'style','pushbutton','position', [525 40 75 40],'callback', '[x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)'); // GUI object for the pushbutton allowing access to the next part of the program
 
 // Definition of uicontrol object properties ----------------------------------
@@ -147,5 +149,6 @@ set(h_push3, 'string', 'Browse', 'fontsize', 12); // Writes browse to the push b
 
 set(h_text4, 'string', 'Check this box if the STL file is in binary format :', 'fontsize', 12); // Prompt for the STL format checkbox
 set(h_text5, 'string', 'Check this box if an input file is used : ', 'fontsize', 12); // Prompt for the input file presence checkbox
+set(h_text6, 'string', 'Check this box for animation of the orbit : ', 'fontsize', '12'); // Prompt for the animation desire checkbox
 
 set(h_push4, 'string', 'Next', 'fontsize', 12); // Write next to the push button
