@@ -32,7 +32,10 @@ CL_defParam("RAAN",                     val = 196.5549,   units=['deg']),..
 CL_defParam("Argument of Perigee",      val = 67.2970, units=['deg']),..
 CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']));
 [aa, ec, in, ra, wp, ma] = CL_inputParam(desc) 
-TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // Mean anomaly values for one orbit [rad]
+TA  = linspace(ma*%pi/180,ma*%pi/180 + 2*%pi,1000); // True anomaly values for one orbit [rad]
+//kepCoeff0 stores the elements in this specific order for the J2 function,
+//aa is required to be in metres and all angles in radians
+// (we should consider changing the user input to radians and m, although this may be inconvenient for the user...)
 kepCoeff0 = [aa*(1e3); ec; in*(%pi)/180; wp*(%pi)/180; ra*(%pi)/180; ma*(%pi)/180]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 // Part 1b --- initialization of frame related parameters ---------------------
@@ -45,21 +48,25 @@ frame   = 10e3;                  // Dimension of the data bounds [km]
 // Part 1c----time and perturbation related parameters-------------------------
 //prompt the user for mission start time, date, and duration
 desc2 = list(..
-CL_defParam("Year", val = 2013),..
-CL_defParam("Month", val=3),..
-CL_defParam("Day",val=1),..
+CL_defParam("Year",val = 2018),..
+CL_defParam("Start Month",val=5),..//Month is an integer value, 1-Jan,2-Feb etc...
+CL_defParam("Day",val=15),..
 CL_defParam("Hour",val=12),..
 CL_defParam("Minute",val=0),..
 CL_defParam("Second",val=0),..
 CL_defParam("Mission Duration",val=1,units=['days']),..
-CL_defParam("Time Step",val=30,units=['seconds']));
+CL_defParam("Time Step",val=30,units=['seconds']));//time steps of under 30 seconds may strain weaker computers
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
  
-cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec); 
-cjd = cjd0 + (0 : tstep/86400 : xduration); 
+//cjd0-Mission Start Date
+cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec);//Calendar date to modified Julian Day
+//cjd is 1xn array, where n is number of timesteps throughout mission duration
+cjd = cjd0 + (0 : tstep/86400 : xduration);
 
 //J2 Perturbation model
-kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); 
+//Output is a 6xn array of orbital elements, for n timesteps of mission duration
+// i.e stores the changing trajectory at each timestep
+kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); // "m" for mean, may be changed to "o" for osculating
 // Part 1d --- initialization of variables related to the 3D model of the spacecraft
 enlarge = 10; // Enlargement factor to increase the volume of the model
 //  Part 2 --- Definition of proprietary functions ----------------------------
@@ -124,7 +131,6 @@ yIns = (t.y*enlarge) + radV(2,1); // | Changes the position of all vertices to p
 zIns = (t.z*enlarge) + radV(3,1); // |
 plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 // Part 3e --- Motion of the satellite ----------------------------------------
-
     for i = 1:length(radV) // For mission duration
         delete() // Deletes the last graphical element
         xIns = (t.x*enlarge) - radV(1,i); // |
