@@ -88,6 +88,22 @@ function [] = activeSelect(t,tcolor,activSurfs)
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
 
+function [] = selectONSurf(t,allSurface)
+    slt = h_orSur.value;
+    disp(slt);
+    xVertices = t.x(:,slt) // Gets the x position of the vertices of the solar panel surfaces
+    yVertices = t.y(:,slt) // Gets the y position of the vertices of the solar panel surfaces
+    zVertices = t.z(:,slt) // Gets the z position of the vertices of the solar panel surfaces
+    xy = [(xVertices(1)-xVertices(2)) (yVertices(1)-yVertices(2)) (zVertices(1)-zVertices(2))]
+    xz = [(xVertices(1)-xVertices(3)) (yVertices(1)-yVertices(3)) (zVertices(1)-zVertices(3))]
+    n = cross(xy,xz)
+    n = n/sqrt(n(1)^2 + n(2)^2 + n(3)^2); // Computes unit vector
+    n = n*20;
+    disp(n) // for testing
+    scf(0); // Sets figure no.0 as the current editable 
+    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3)
+endfunction
+
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
 // t.header = "string", changes the string at the begining of the STL file
 // t.x(i j) to access values in the x matrix 
@@ -141,6 +157,10 @@ h_title = uicontrol(g,'style','text', 'position', [0 440 350 60]); // GUI object
 h_text1 = uicontrol(g,'style','text', 'position', [0 400 350 40]); // GUI object for description sentence
 h_text2 = uicontrol(g,'style','text', 'position', [350 460 200 40]); // GUI object for deactive panel listbox label
 h_text3 = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI object for active panel listbox label
+h_text4 = uicontrol(g,'style','text', 'position', [0 50 290 30]); // GUI object for radial outward surface prompt
+h_text5 = uicontrol(g,'style','text', 'position', [0 80 290 30]); // GUI object for orbit normal surface prompt
+h_raSur = uicontrol(g,'style','listbox','position', [290 50 60 30]); // GUI object for radial outward surface listbox
+h_orSur = uicontrol(g,'style','listbox','position', [290 80 60 30], 'callback', 'selectONSurf(t,allSurface)'); // GUI object for orbit normal surface listbox
 h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
 h_pushR = uicontrol(g,'style','pushbutton','position', [550 250 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for pushbutton moving object from left to right 
@@ -152,11 +172,14 @@ set(h_title, 'string', 'Solar Panel Surface Selector', 'fontsize', 24,'horizonta
 set(h_text1, 'string', msprintf('There are %0.0f surfaces in total, select the ones that are solar panels',length(tcolor))); // Writes the description sentence 
 set(h_text2, 'string', 'Non-solar-panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Writes the header of the left listbox
 set(h_text3, 'string', 'Solar panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Wrties the header of the right listbox
+set(h_text4, 'string', 'Select surface to define radial outward direction', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
+set(h_text5, 'string', 'Select surface to define orbit normal direction', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
 set(h_pushR, 'string', '>>'); // Writes to the right pushbutton
 set(h_pushL, 'string', '<<'); // Writes to the left pushbutton
 set(h_pushE, 'string', 'End Selection Process'); // Write to the end pushbutton
 
 // --- Initialization of surface related objects and uicontrols -----
+allSurface = 1:1:length(tcolor); // Initializes the allSurface array, this object stores the IDs of all the surface on the spacecraft
 deactSurfs = 1:1:length(tcolor); // Initializes the deactSurfs array, this object stores the IDs of the surfaces that are not solar panels
 activSurfs = []; // Initializes the activSurfs array, this object stores the IDs of the surface that are solar panels 
 for i = 1:length(tcolor)
@@ -188,3 +211,13 @@ for i = 1:length(activSurfs)
     end
 end
 set(h_activ, 'string', s) // Sets the new list to the right listbox
+
+s = []; // Resets the string 
+for i = 1:length(allSurface)
+
+        // Makes the new list to output to the direction listboxs
+        s = s + msprintf('@s %0.0f |',allSurface(i)),
+
+end
+set(h_raSur, 'string', s) // Sets the new list to the radial outward listbox
+set(h_orSur, 'string', s) // Sets the new list to the radial outward listbox
