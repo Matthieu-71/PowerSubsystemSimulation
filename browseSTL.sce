@@ -51,6 +51,12 @@ function [inUsed] = inpCheckBox(inUsed)
     inUsed = h_inSlt.value // Sets the value of the checkbox to the object storing the presence of an input file 
 endfunction
 
+function [Xanimate] = inpCheckBox(Xanimate)
+    // This function is called when the checkbox for the animation presence is used 
+    Xanimate = h_inSlt.value // Sets the value of the checkbox to the object
+endfunction
+
+
 function [x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)
     // This function is called when the user pushed the next button, it runs a few checks and allows the program to proceed to the next step
     suffix = part(stlFilePath,(length(stlFilePath)-3:length(stlFilePath))); // Gets the suffix of the stlFilePath
@@ -105,6 +111,7 @@ outFilePath = crntPath; // Initializes the output file path to the current path,
 stlFilePath = crntPath; // Initializes the STL file path to the current path, just so that it has a value
 isBinary = 'ascii'; // The format of the STL file, by default ascii
 inUsed = 0; // Indicates if an input file is used, if == 0 then no input file is used, if == 1 then an input file is used.
+Xanimate = 0; // Inidicates if the user wants the orbit animation to be shown, if ==0 not shown.
 
 f = figure(); // Creates a figure
 f.screen_position = [0 0]; // Sets the GUI to appear at the top left of the screen
