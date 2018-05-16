@@ -111,8 +111,8 @@ cjd = cjd0 + (0 : tstep/86400 : xduration);
 //input initial orbital elements into J2 Perturbation model
 //Output is a 6xn array of orbital elements, for n timesteps of mission duration
 // i.e stores the changing trajectory at each timestep
-kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); // "m" for mean, may be changed to "o" for osculating
-kepCoeff(1,:)=kepCoeff(1,:)/1000;//changing semi major axis to kilometres, to keep with dimensions of section 1b
+kepCoeff = CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); // "m" for mean, may be changed to "o" for osculating
+kepCoeff(1,:) = kepCoeff(1,:)/1000;//changing semi major axis to kilometres, to keep with dimensions of section 1b
 [pos_eci,vel_eci] = CL_oe_kep2car(kepCoeff); // State Vector in ECI frame
 // Part 2d --- initialization of variables related to the 3D model of the spacecraft
 enlarge = 10; // Enlargement factor to increase the volume of the model
@@ -123,7 +123,9 @@ enlarge = 10; // Enlargement factor to increase the volume of the model
 
 // Part 3a-----Ground Track----------------------------------------- 
 pos_ecf = CL_fr_convert("ECI", "ECF", cjd, pos_eci);//Position vector in ECF frame 
-fig1=scf(); 
+fig1 = scf(); 
+orbitstep = TP/tstep;//number of tsteps in one orbit
+intorbits = floor((length(cjd)*tstep)/TP);//integer number of full orbits
 CL_plot_earthMap(color_id=color("seagreen"));// Plot Earth map
 CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 
@@ -132,18 +134,14 @@ CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 
 
 //  Part 4a --- Creation of the Earth spheroid --------------------------------
-fig2=scf(); 
+fig2 = scf(); 
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 //  Part 4b --- Creation of the 'space' environment ---------------------------
 xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
-orbitstep = TP/tstep;//number of tsteps in one orbit
-intorbits = floor((length(cjd)*tstep)/TP);//integer number of full orbits
-for n = 1: intorbits
-   param3d(pos_eci(1,n*tstep:(n+1)*tstep),pos_eci(2,n*tstep:(n+1)*tstep),pos_eci(3,n*tstep:(n+1)*tstep)); 
-  // orbhan=gce()
-   //orbhan.foreground=color(n*10,n*10,n*10);
-end
+
+param3d(pos_eci(1,1:orbitstep),pos_eci(2,1:orbitstep),pos_eci(3,1:orbitstep)); 
+
 
 //  PART 4d --- Insertion STL model of spacecraft --------------------------------
 
