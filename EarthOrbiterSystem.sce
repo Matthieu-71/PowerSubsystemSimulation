@@ -82,7 +82,7 @@ CL_defParam("RAAN",                     val = 196.5549,   units=['deg']),..
 CL_defParam("Argument of Perigee",      val = 67.2970, units=['deg']),..
 CL_defParam("Mean anomaly at epoch",    val = 292.8531,   units=['deg']));
 [aa, ec, in, ra, wp, ma] = CL_inputParam(desc) 
-TP=2*%pi*sqrt(aa^3/mu);//orbital period [seconds]
+TP = 2*%pi*sqrt(aa^3/mu);//orbital period [seconds]
 //kepCoeff0 stores the elements in this specific order for the J2 function,
 //aa is required to be in metres and all angles in radians
 // (we should consider changing the user input to radians and m, although this may be inconvenient for the user...)
@@ -137,8 +137,8 @@ plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 //  Part 4b --- Creation of the 'space' environment ---------------------------
 xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
-orbitstep=TP/tstep;//number of tsteps in one orbit
-intorbits=floor((length(cjd)*tstep)/TP);//integer number of full orbits
+orbitstep = TP/tstep;//number of tsteps in one orbit
+intorbits = floor((length(cjd)*tstep)/TP);//integer number of full orbits
 for n = 1: intorbits
    param3d(pos_eci(1,n*tstep:(n+1)*tstep),pos_eci(2,n*tstep:(n+1)*tstep),pos_eci(3,n*tstep:(n+1)*tstep)); 
   // orbhan=gce()
@@ -146,10 +146,6 @@ for n = 1: intorbits
 end
 
 //  PART 4d --- Insertion STL model of spacecraft --------------------------------
-exec("C:\Scilab\stlfiles\etc\stlfiles.start"); // Execute files needed for STL import, this needs to be changed to fit any user
-stlpath = get_absolute_file_path("EarthOrbiterSystem.sce") // Gets the path leading the the desiring STL file, this needs to be changed to fit any user
-t = stlread(fullfile(stlpath, "aboutOrigin.stl"), "binary"); // Imports the STL file
-tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 
 xIns = (t.x*enlarge) - pos_eci(1,1); // |
 yIns = (t.y*enlarge) + pos_eci(2,1); // | Changes the position of all vertices to place the object in the frame
