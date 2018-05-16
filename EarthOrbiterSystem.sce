@@ -139,7 +139,7 @@ plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 
-param3d(pos_eci(1,1:orbitstep),pos_eci(2,1:orbitstep),pos_eci(3,1:orbitstep)); 
+param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
 
 
 //  PART 4d --- Insertion STL model of spacecraft --------------------------------
