@@ -99,7 +99,7 @@ function [x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)
 endfunction
 
 x = 0;
-crntPath = get_absolute_file_path("STL_promt.sce"); // String of the path where this program is located
+crntPath = get_absolute_file_path("browseSTL.sce"); // String of the path where this program is located
 inFilePath  = crntPath; // Initializes the input file path to the current path, just so that it has a value
 outFilePath = crntPath; // Initializes the output file path to the current path, just so that it has a value
 stlFilePath = crntPath; // Initializes the STL file path to the current path, just so that it has a value

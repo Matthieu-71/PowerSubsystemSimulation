@@ -20,7 +20,6 @@
 //      Part 4c : Insertion of the orbital trajectory
 //      PART 4d : Insert STL model of spacecraft
 //      Part 4e : Motion of the satellite
-clear; clc; clf;
 CL_init(); // Importation of celestLab library   
 
 

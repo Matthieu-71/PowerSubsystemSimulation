@@ -10,7 +10,7 @@ while x == 0
 end
 x = 0;
 
-exec(pwd()+'\solaSurfacesSTL.sce',-1) // Executes the solar panel surface selection GUI
+exec(pwd()+'\solarSurfacesSTL.sce',-1) // Executes the solar panel surface selection GUI
 while x == 0
     // This style of loop is used so that the program waits for the previous GUI operations to terminate
     //sleep(1) 
