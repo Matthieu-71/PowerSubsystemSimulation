@@ -91,15 +91,16 @@ kepCoeff0 = [aa; ec; in*(%pi)/180; wp*(%pi)/180; ra*(%pi)/180; ma*(%pi)/180]; //
 
 // Part 2c----time and perturbation related parameters-------------------------
 //prompt the user for mission start time, date, and duration
+dt = getdate(); // Gets date and time information
 desc2 = list(..
-CL_defParam("Year",val = 2018),..
-CL_defParam("Start Month",val=5),..//Month is an integer value, 1-Jan,2-Feb etc...
-CL_defParam("Day",val=15),..
-CL_defParam("Hour",val=12),..
-CL_defParam("Minute",val=0),..
-CL_defParam("Second",val=0),..
-CL_defParam("Mission Duration",val=1,units=['days']),..
-CL_defParam("Time Step",val=30,units=['seconds']));//time steps of under 30 seconds may strain weaker computers
+CL_defParam("Start year",           val = dt(1)),..
+CL_defParam("Start month",          val = dt(2)),..
+CL_defParam("Start day",            val = dt(6)),..
+CL_defParam("Start hour",           val = dt(7)),..
+CL_defParam("Start minute",         val = dt(8)),..
+CL_defParam("Start second",         val = dt(9)),..
+CL_defParam("Mission duration",     val = 1,        units = ['days']),..
+CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
  
 //cjd0-Mission Start Date
