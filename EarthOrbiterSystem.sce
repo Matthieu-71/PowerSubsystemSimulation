@@ -63,10 +63,11 @@ cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec);//Calendar date to modified Julia
 //cjd is 1xn array, where n is number of timesteps throughout mission duration
 cjd = cjd0 + (0 : tstep/86400 : xduration);
 
-//J2 Perturbation model
+//input initial orbital elements into J2 Perturbation model
 //Output is a 6xn array of orbital elements, for n timesteps of mission duration
 // i.e stores the changing trajectory at each timestep
 kepCoeff= CL_ex_propagate("j2sec", "kep", cjd0, kepCoeff0, cjd, "m"); // "m" for mean, may be changed to "o" for osculating
+kepCoeff(1,:)=kepCoeff(1,:)/1000;//restoring semi major axis to kilometres, to keep with dimensions of section 1b
 // Part 1d --- initialization of variables related to the 3D model of the spacecraft
 enlarge = 10; // Enlargement factor to increase the volume of the model
 //  Part 2 --- Definition of proprietary functions ----------------------------
@@ -139,6 +140,7 @@ plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         h = gca(); // Gets the current graphic axes
         h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
         plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-        sleep(100) // Pauses the loop for 10 ms
+        h.isoview="on";//easier on the eyes, isometric view of plot
+        sleep(16.66667) // Pauses the loop for 16.6-7 ms (60 Hz animation)
     end
 end
