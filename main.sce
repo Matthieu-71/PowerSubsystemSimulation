@@ -19,3 +19,12 @@ save(outFilePath,tcolor)
 
 exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes computation script
 disp('done')
+
+// comments for attitude
+//QSW
+//x : radially outwards
+//y : completes triad (almost RAM) instant velocity
+//z : orbit normal (same direction as h vector)
+//
+//use celestLab functions to convert
+//
