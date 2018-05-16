@@ -136,6 +136,7 @@ CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 fig2 = scf(); 
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 //  Part 4b --- Creation of the 'space' environment ---------------------------
+pos_sun = CL_eph_sun(cjd);
 xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 
@@ -161,6 +162,6 @@ plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
         plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         //h.isoview="on";//easier on the eyes, isometric view of plot
-        sleep(16.66667) // Pauses the loop for 16.6-7 ms (60 Hz animation)
+        sleep(1000/60) // Pauses the loop for 16.6-7 ms (60 Hz animation)
     end
 
