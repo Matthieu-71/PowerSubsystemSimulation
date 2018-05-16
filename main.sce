@@ -17,5 +17,5 @@ while x == 0
 end
 save(outFilePath,tcolor)
 
-exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes the main computation program
+exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes computation script
 disp('done')
