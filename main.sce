@@ -15,7 +15,7 @@ while x == 0
     // This style of loop is used so that the program waits for the previous GUI operations to terminate
     //sleep(1) 
 end
-save(outFilePath,tcolor)
+save(outFilePath,tcolor,alignVec,constVec)
 
 exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes computation script
 disp('done')

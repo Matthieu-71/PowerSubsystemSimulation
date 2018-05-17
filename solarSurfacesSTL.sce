@@ -149,7 +149,7 @@ t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previ
 //figure
 if inUsed == 1 then
     // In the case that an input file is provided, tcolor is initialized using it 
-    load(inFilePath,'tcolor');
+    load(inFilePath,'tcolor','alignVec','constVec');
 elseif inUsed == 0 then
     // in the (default) case that no input file is provided, tcolor is intialized with the default colour
     tcolor = 12*ones(1, size(t.x,"c"));
@@ -203,12 +203,12 @@ h_text8 = uicontrol(g,'style','text', 'position', [215 110 35 20], 'string', 'Y'
 h_text9 = uicontrol(g,'style','text', 'position', [255 110 35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
 
 h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20], 'horizontalalignment', 'center'); // GUI object for entering panel efficiency
-h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial X component
-h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial Y component
-h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial Z component
-h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal X component
-h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal Y component
-h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal Z component
+h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(1))); // GUI object for entering radial X component
+h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(2))); // GUI object for entering radial Y component
+h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(3))); // GUI object for entering radial Z component
+h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",constVec(1))); // GUI object for entering orbit normal X component
+h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",constVec(2))); // GUI object for entering orbit normal Y component
+h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",constVec(3))); // GUI object for entering orbit normal Z component
 
 h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
