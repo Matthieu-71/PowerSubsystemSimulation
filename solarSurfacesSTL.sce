@@ -1,6 +1,6 @@
 aSWriteIndex = 1; // Counter object, used to store the current write index of the active surfaces
-orbNorDir = zeros(1,3); // Object saving the direction vector of the orbit normal
-radOutDir = zeros(1,3); // Object saving the direction vector of the radial outward
+alignVec = zeros(1,3); // Object saving the direction vector of the orbit normal
+constVec = zeros(1,3); // Object saving the direction vector of the radial outward
 
 function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)
     // This function moves a surface from the left listbox to the right one, ei. a surface becomes a solar panel
@@ -110,6 +110,38 @@ function [orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)
     orbNorDir = n;
 endfunction
 
+function [alignVec] = saveRadDir()
+    // This function retrieves the components of the radial outward direction and stores them in the appropriate object 
+    x = strtod(h_edit2.string); // Retrieves x component from GUI
+    y = strtod(h_edit3.string); // Retrieves y component from GUI
+    z = strtod(h_edit4.string); // Retrieves z component from GUI
+    alignVec = [x y z];
+
+    scf(0); // Sets figure no.0 as the current editable 
+    delete("all") // Replots the figure with the new arrow
+    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+    xarrows([0 x],[0 y],[0 z],10,3); // Plots the new arrow
+    xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,2);
+    a = gca();
+    a.isoview = 'on'; // Changes the view to isometric 
+endfunction
+
+function [constVec] = saveOrbDir()
+    // This function retrieves the components of the orbit normal direction and stores them in the appropriate object 
+    x = strtod(h_edit5.string); // Retrieves x component from GUI
+    y = strtod(h_edit6.string); // Retrieves y component from GUI
+    z = strtod(h_edit7.string); // Retrieves z component from GUI
+    constVec = [x y z];
+
+    scf(0); // Sets figure no.0 as the current editable 
+    delete("all") // Replots the figure with the new arrow
+    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+    xarrows([0 x],[0 y],[0 z],10,2); // Plots the new arrow
+    xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,3);
+    a = gca();
+    a.isoview = 'on'; // Changes the view to isometric 
+endfunction
+
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
 // t.header = "string", changes the string at the begining of the STL file
 // t.x(i j) to access values in the x matrix 
@@ -163,29 +195,29 @@ h_title = uicontrol(g,'style','text', 'position', [0 440 350 60]); // GUI object
 h_text1 = uicontrol(g,'style','text', 'position', [0 400 350 40]); // GUI object for description sentence
 h_text2 = uicontrol(g,'style','text', 'position', [350 460 200 40]); // GUI object for deactive panel listbox label
 h_text3 = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI object for active panel listbox label
-h_text4 = uicontrol(g,'style','text', 'position', [0 50 175 30]); // GUI object for radial outward surface prompt
-h_text5 = uicontrol(g,'style','text', 'position', [0 80 175 30]); // GUI object for orbit normal surface prompt
+h_text4 = uicontrol(g,'style','text', 'position', [0 80 175 30]); // GUI object for radial outward surface prompt
+h_text5 = uicontrol(g,'style','text', 'position', [0 50 175 30]); // GUI object for orbit normal surface prompt
 h_text6 = uicontrol(g,'style','text', 'position', [0 380 290 20]); // GUI object for panel efficiency prompt
 h_text7 = uicontrol(g,'style','text', 'position', [175 110 35 20], 'string', 'X','horizontalalignment', 'center'); // GUI object for X column
 h_text8 = uicontrol(g,'style','text', 'position', [215 110 35 20], 'string', 'Y','horizontalalignment', 'center'); // GUI object for Y column
 h_text9 = uicontrol(g,'style','text', 'position', [255 110 35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
 
-h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20]); // GUI object for entering panel efficiency
-h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30]); // GUI object for entering radial X component
-h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30]); // GUI object for entering radial Y component
-h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30]); // GUI object for entering radial Z component
-h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30]); // GUI object for entering orbit normal X component
-h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30]); // GUI object for entering orbit normal Y component
-h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30]); // GUI object for entering orbit normal Z component
+h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20], 'horizontalalignment', 'center'); // GUI object for entering panel efficiency
+h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial X component
+h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial Y component
+h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30], 'horizontalalignment', 'center'); // GUI object for entering radial Z component
+h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal X component
+h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal Y component
+h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30], 'horizontalalignment', 'center'); // GUI object for entering orbit normal Z component
 
 h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
 
-h_pushR = uicontrol(g,'style','pushbutton','position', [550 250 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
-h_pushL = uicontrol(g,'style','pushbutton','position', [550 200 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
-h_pushE = uicontrol(g,'style','pushbutton','position', [0 0 350 50],'callback', '[x] = onEndButton()'); // GUI object for pushbutton to next step
-h_radSt = uicontrol(g,'style','pushbutton','position', [290 50 60 30]); // GUI object for saving radial outward direction
-h_orbSt = uicontrol(g,'style','pushbutton','position', [290 80 60 30]); // GUI object for saving orbit normal direction
+h_pushR = uicontrol(g,'style','pushbutton','position', [550 250  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
+h_pushL = uicontrol(g,'style','pushbutton','position', [550 200  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
+h_pushE = uicontrol(g,'style','pushbutton','position', [  0   0 350 50],'callback', '[x] = onEndButton()'); // GUI object for pushbutton to next step
+h_radSt = uicontrol(g,'style','pushbutton','position', [290  80  60 30],'callback', '[alignVec] = saveRadDir()'); // GUI object for saving radial outward direction
+h_orbSt = uicontrol(g,'style','pushbutton','position', [290  50  60 30],'callback', '[constVec] = saveOrbDir()'); // GUI object for saving orbit normal direction
 
 // --- Definition of uicontrol object properties --------------------
 set(h_title, 'string', 'Solar Panel Surface Selector', 'fontsize', 24,'horizontalalignment', 'center'); // Writes the title
@@ -247,4 +279,3 @@ end
 // Ask for components of the axis aligned with the zenith vector
 // alignVec - variable for the components of the aligned axis (points towards zenith, radially outwards)
 // constVec - variable for the components of the constrained axis (points toward (roughly) orbit normal)
- 
