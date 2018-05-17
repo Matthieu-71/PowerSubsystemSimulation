@@ -121,7 +121,7 @@ function [alignVec] = saveRadDir()
     delete("all") // Replots the figure with the new arrow
     plot3d(-t.x,t.y,list(t.z,tcolor)); 
     xarrows([0 x],[0 y],[0 z],10,3); // Plots the new arrow
-    xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,2);
+    xarrows([0 constVec(1)],[0 constVec(2)],[0 constVec(3)],10,2);
     a = gca();
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
