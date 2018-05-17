@@ -53,12 +53,11 @@ function [] = plot_sphere(r,n,d)
     e.foreground = 18; // Sets the colour of the lines seperating each surface
     trace_traj(r*[cos(lat);zeros(lat);sin(lat)], F=1, col=16, th=1); // Plots meridian  
     trace_traj(r*[cos(lon);sin(lon);zeros(lon)], F=1, col=16, th=1); // Plots equator
-
     a = gca();
     a.isoview = 'on'; // Changes the view to isometric 
     a.grid = [1 1]; // Adds grid lines to the graphical object
 endfunction
-
+clc // Clear unimportant warnings from console
 
 // PART 2 --- DEFINITION OF GLOBAL VARIABLES ----------------------------------
 
@@ -98,7 +97,7 @@ CL_defParam("Start day",            val = dt(6)),..
 CL_defParam("Start hour",           val = dt(7)),..
 CL_defParam("Start minute",         val = dt(8)),..
 CL_defParam("Start second",         val = dt(9)),..
-CL_defParam("Mission duration",     val = 1,        units = ['days']),..
+CL_defParam("Mission duration",     val = 1/24,        units = ['days']),..
 CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
  
@@ -135,9 +134,10 @@ CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 //  Part 4a --- Creation of the Earth spheroid --------------------------------
 fig2 = scf(); 
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
+
 //  Part 4b --- Creation of the 'space' environment ---------------------------
 pos_sun = CL_eph_sun(cjd);
-xarrows([0 frame],[0 0],[0 0],20000,color(255,179,0)) //Create Sun-Earth vector
+
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
@@ -150,18 +150,25 @@ yIns = (t.y*enlarge) + pos_eci(2,1); // | Changes the position of all vertices t
 zIns = (t.z*enlarge) + pos_eci(3,1); // |
 plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 // Part 4e --- Motion of the satellite ----------------------------------------
-    for i = 1:(length(pos_eci-1)) // For mission duration
-        delete() // Deletes the last graphical element
+    for i = 1:max(size(pos_eci)) // For mission duration
+        if i > 1
+            delete(h.children(1)) // Deletes the Sun-earth vector
+            delete(h.children(1)) // Deletes the last STL
+        end
         misstime=i*tstep;
         timestring=string(misstime)
         xIns = (t.x*enlarge) - pos_eci(1,i); // |
         yIns = (t.y*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
         zIns = (t.z*enlarge) + pos_eci(3,i); // |
+        normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]);
+        for j = 1:3
+            sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun);
+        end
+        xarrows([0 sun_vect(1)],[0 sun_vect(2)],[0 sun_vect(3)],20000,color(255,179,0)) //Create Sun-Earth vector
         xtitle(['t+ ',timestring,'seconds']);
         h = gca(); // Gets the current graphic axes
         h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
         plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-        //h.isoview="on";//easier on the eyes, isometric view of plot
+        h.isoview="on";//easier on the eyes, isometric view of plot
         sleep(1000/60) // Pauses the loop for 16.6-7 ms (60 Hz animation)
     end
-
