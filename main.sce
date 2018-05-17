@@ -17,6 +17,7 @@ while x == 0
 end
 save(outFilePath,tcolor,alignVec,constVec)
 
+exec(pwd()+'\InitialAttitude.sce',-1) // Executes attitude script
 exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes computation script
 disp('done')
 
