@@ -22,5 +22,8 @@ xAtt = t.x; // Redefine the STL x data for attitude determination use
 yAtt = t.y; // Redefine the STL y datafor attitude determination use
 zAtt = t.z; // Redefine the STL z datafor attitude determination use
 for i = 1:(row*col) // Initialize for loop to cycle through STL data
-    [xAtt(i), yAtt(i), zAtt(i)] = [xAtt(i);yAtt(i);zAtt(i)]*R; // Transform the old data point to be alligned with the QSW frame
+    tempOut = R*[xAtt(i);yAtt(i);zAtt(i)]; // Transform the old data point to be alligned with the QSW frame
+    xAtt(i) = tempOut(1); // Distribute output into matrices for x components
+    yAtt(i) = tempOut(2); // Distribute output into matrices for y components
+    zAtt(i) = tempOut(3); // Distribute output into matrices for z components
 end // End for loop
