@@ -1,3 +1,4 @@
+
 // EarthOrbiterSystem v 0.1.0
 // This program models the orbital trajectory of a CAD model about the Earth
 // Authours : Arvin T. Matthieu D. Jessie A. 
@@ -144,14 +145,14 @@ param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:));
 
 
 //  PART 4d --- Insertion STL model of spacecraft --------------------------------
-
+if Xanimate == 1 then // Check for animation condition
 xIns = (t.x*enlarge) - pos_eci(1,1); // |
 yIns = (t.y*enlarge) + pos_eci(2,1); // | Changes the position of all vertices to place the object in the frame
 zIns = (t.z*enlarge) + pos_eci(3,1); // |
 plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
 // Part 4e --- Motion of the satellite ----------------------------------------
     for i = 1:max(size(pos_eci)) // For mission duration
-        if i > 1
+        if i > 1 // Make sure spacecraft has done one orbit
             delete(h.children(1)) // Deletes the Sun-earth vector
             delete(h.children(1)) // Deletes the last STL
         end
@@ -160,9 +161,9 @@ plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         xIns = (t.x*enlarge) - pos_eci(1,i); // |
         yIns = (t.y*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
         zIns = (t.z*enlarge) + pos_eci(3,i); // |
-        normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]);
+        normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]); // Calculate the magnitude of the Sun-Earth vector
         for j = 1:3
-            sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun);
+            sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun); // Assign the components to the Sun-Earth Vector
         end
         xarrows([0 sun_vect(1)],[0 sun_vect(2)],[0 sun_vect(3)],20000,color(255,179,0)) //Create Sun-Earth vector
         xtitle(['t+ ',timestring,'seconds']);
@@ -172,3 +173,4 @@ plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         h.isoview="on";//easier on the eyes, isometric view of plot
         sleep(1000/60) // Pauses the loop for 16.6-7 ms (60 Hz animation)
     end
+end
