@@ -1,6 +1,6 @@
 //Attitude Definition and Beta Angle
-// Authours: Matthieu D. JeJe ArAr
-clear; clc; clf
+// Authours: Matthieu D. Jessie A. Arvin T.
+clear; clc; clf // Remove at implementation
 
 function [] = xRot(vec,theta)
   R1=[1,0,0;0,cos(theta),sin(theta);0,-sin(theta),cos(theta)];
@@ -29,10 +29,14 @@ xIns = t.x; // |
 yIns = t.y; // | Model position
 zIns = t.z; // |
 
+newx = [];
+newy = [];
+newz = [];
+
 for i = 1 : max(size(xIns))*min((xIns))
-    newx(i) = xRot([xIns(i),yIns(i),zIns(i)],%pi/2)
-    newy(i) = yRot([xIns(i),yIns(i),zIns(i)],%pi/2)
-    newz(i) = zRot([xIns(i),yIns(i),zIns(i)],%pi/2)
+    newx(i) = xRot([xIns(i),yIns(i),zIns(i)],%pi/2);
+    newy(i) = yRot([xIns(i),yIns(i),zIns(i)],%pi/2);
+    newz(i) = zRot([xIns(i),yIns(i),zIns(i)],%pi/2);
 end
 plot3d(newx,newy,newz);
 set(gca(),'isoview','on');
