@@ -5,7 +5,7 @@ stlpath = get_absolute_file_path("BetaAngle.sce")+'' // Gets the path leading th
 t = stlread(fullfile(stlpath, "cube.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the file 
 
-xIns = 0; // |
-yIns = 0; // | Model position
-zIns = 0; // |
-plot3d(-xIns,yIns,zIns);
+xIns = t.x; // |
+yIns = t.y; // | Model position
+zIns = t.z; // |
+plot3d(-xIns,yIns,list(zIns,tcolor));
