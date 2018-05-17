@@ -1,21 +1,24 @@
 //Attitude Definition and Beta Angle
 // Authours: Matthieu D. Jessie A. Arvin T.
-clear; clc; clf // Remove at implementation
+clear; clc; clf; // Remove at implementation
 
-function [] = xRot(vec,theta)
-  R1=[1,0,0;0,cos(theta),sin(theta);0,-sin(theta),cos(theta)];
-  out=vec*R1;
+function [outx, outy, outz] = xRot(vec,theta)
+  R1 = [1,0,0;0,cos(theta),sin(theta);0,-sin(theta),cos(theta)];
+  out = vec*R1;
+  outx = out(1);
+  outy = out(2);
+  outz = out(3);
 endfunction
 
-function [] = yRot(vec,theta)
+function [out] = yRot(vec,theta)
   // Jessie lifts like a daddy
-  R2= [cos(theta),0,-sin(theta);0,1,0;sin(theta),0,cos(theta)];
-  out=vec*R2;
+  R2 = [cos(theta),0,-sin(theta);0,1,0;sin(theta),0,cos(theta)];
+  out = vec*R2;
 endfunction
 
-function [] = zRot(vec,theta)
-  R3= [cos(theta),sin(theta),0;-sin(theta),cos(theta),0;0,0,1];
-  out=vec*R3;
+function [out] = zRot(vec,theta)
+  R3 = [cos(theta),sin(theta),0;-sin(theta),cos(theta),0;0,0,1];
+  out = vec*R3;
 endfunction
 
 // --- Remove when implemented into main --------------------------------------
@@ -25,7 +28,6 @@ t = stlread(fullfile(stlpath, "cube.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the fill
 // ----------------------------------------------------------------------------
 
-figure
 plot3d(-t.x,t.y,list(t.z,tcolor)); // Plots the model with the new colour
 f = get("current_figure") // Gets the handle of the current figure window
 scrnSize = get(0, "screensize_px"); // Gets the user's screen size
@@ -38,15 +40,19 @@ xIns = t.x; // |
 yIns = t.y; // | Model position
 zIns = t.z; // |
 
-newx = [];
-newy = [];
-newz = [];
+ang = %pi/2; // Declare angle of rotation
+[row col] = size(xIns) // Find the size of the vertex matrix
 
-for i = 1:max(size(xIns))*min(size(xIns))
-    newx(i) = xRot([xIns(i),yIns(i),zIns(i)],%pi/2);
-    newy(i) = yRot([xIns(i),yIns(i),zIns(i)],%pi/2);
-    newz(i) = zRot([xIns(i),yIns(i),zIns(i)],%pi/2);
+newx = zeros(row,col); // |
+newy = zeros(row,col); // | Initalizing vectors
+newz = zeros(row,col); // |
+
+for i = 1:(row*col)
+    [newx(i) newy(i) newz(i)] = xRot([xIns(i),yIns(i),zIns(i)], ang);
+    //newy(i) = yRot([xIns(i),yIns(i),zIns(i)], ang);
+    //newz(i) = zRot([xIns(i),yIns(i),zIns(i)], ang);
 end
+
 plot3d(newx,newy,newz);
 set(gca(),'isoview','on');
 xarrows([0 30],[0 0],[0 0],30,color(255,0,0))
