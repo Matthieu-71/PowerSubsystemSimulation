@@ -163,26 +163,43 @@ h_title = uicontrol(g,'style','text', 'position', [0 440 350 60]); // GUI object
 h_text1 = uicontrol(g,'style','text', 'position', [0 400 350 40]); // GUI object for description sentence
 h_text2 = uicontrol(g,'style','text', 'position', [350 460 200 40]); // GUI object for deactive panel listbox label
 h_text3 = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI object for active panel listbox label
-h_text4 = uicontrol(g,'style','text', 'position', [0 50 290 30]); // GUI object for radial outward surface prompt
-h_text5 = uicontrol(g,'style','text', 'position', [0 80 290 30]); // GUI object for orbit normal surface prompt
-h_raSur = uicontrol(g,'style','listbox','position', [290 50 60 30]); // GUI object for radial outward surface listbox
-h_orSur = uicontrol(g,'style','listbox','position', [290 80 60 30], 'callback', '[orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)'); // GUI object for orbit normal surface listbox
+h_text4 = uicontrol(g,'style','text', 'position', [0 50 175 30]); // GUI object for radial outward surface prompt
+h_text5 = uicontrol(g,'style','text', 'position', [0 80 175 30]); // GUI object for orbit normal surface prompt
+h_text6 = uicontrol(g,'style','text', 'position', [0 380 290 20]); // GUI object for panel efficiency prompt
+h_text7 = uicontrol(g,'style','text', 'position', [175 110 35 20], 'string', 'X','horizontalalignment', 'center'); // GUI object for X column
+h_text8 = uicontrol(g,'style','text', 'position', [215 110 35 20], 'string', 'Y','horizontalalignment', 'center'); // GUI object for Y column
+h_text9 = uicontrol(g,'style','text', 'position', [255 110 35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
+
+h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20]); // GUI object for entering panel efficiency
+h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30]); // GUI object for entering radial X component
+h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30]); // GUI object for entering radial Y component
+h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30]); // GUI object for entering radial Z component
+h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30]); // GUI object for entering orbit normal X component
+h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30]); // GUI object for entering orbit normal Y component
+h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30]); // GUI object for entering orbit normal Z component
+
 h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
-h_pushR = uicontrol(g,'style','pushbutton','position', [550 250 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for pushbutton moving object from left to right 
-h_pushL = uicontrol(g,'style','pushbutton','position', [550 200 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for pushbutton moving object from right to left
+
+h_pushR = uicontrol(g,'style','pushbutton','position', [550 250 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
+h_pushL = uicontrol(g,'style','pushbutton','position', [550 200 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
 h_pushE = uicontrol(g,'style','pushbutton','position', [0 0 350 50],'callback', '[x] = onEndButton()'); // GUI object for pushbutton to next step
+h_radSt = uicontrol(g,'style','pushbutton','position', [290 50 60 30]); // GUI object for saving radial outward direction
+h_orbSt = uicontrol(g,'style','pushbutton','position', [290 80 60 30]); // GUI object for saving orbit normal direction
 
 // --- Definition of uicontrol object properties --------------------
 set(h_title, 'string', 'Solar Panel Surface Selector', 'fontsize', 24,'horizontalalignment', 'center'); // Writes the title
 set(h_text1, 'string', msprintf('There are %0.0f surfaces in total, select the ones that are solar panels',length(tcolor))); // Writes the description sentence 
 set(h_text2, 'string', 'Non-solar-panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Writes the header of the left listbox
 set(h_text3, 'string', 'Solar panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Wrties the header of the right listbox
-set(h_text4, 'string', 'Select surface to define radial outward direction', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
-set(h_text5, 'string', 'Select surface to define orbit normal direction', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
+set(h_text4, 'string', 'Enter radial outward direction : ', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
+set(h_text5, 'string', 'Enter orbit normal direction : ', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
+set(h_text6, 'string', 'Enter solar panel efficiency, number between 0 and 1 : ', 'fontsize', 12); // Wrties the prompt for the panel efficiency
 set(h_pushR, 'string', '>>'); // Writes to the right pushbutton
 set(h_pushL, 'string', '<<'); // Writes to the left pushbutton
 set(h_pushE, 'string', 'End Selection Process'); // Write to the end pushbutton
+set(h_radSt, 'string', 'Save' ) // Writes to pushbutton
+set(h_orbSt, 'string', 'Save' ) // Writes to pushbutton
 
 // --- Initialization of surface related objects and uicontrols -----
 allSurface = 1:1:length(tcolor); // Initializes the allSurface array, this object stores the IDs of all the surface on the spacecraft
@@ -220,10 +237,14 @@ set(h_activ, 'string', s) // Sets the new list to the right listbox
 
 s = []; // Resets the string 
 for i = 1:length(allSurface)
-
     // Makes the new list to output to the direction listboxs
     s = s + msprintf('@s %0.0f |',allSurface(i)),
 
 end
-set(h_raSur, 'string', s) // Sets the new list to the radial outward listbox
-set(h_orSur, 'string', s) // Sets the new list to the radial outward listbox
+
+
+
+// Ask for components of the axis aligned with the zenith vector
+// alignVec - variable for the components of the aligned axis (points towards zenith, radially outwards)
+// constVec - variable for the components of the constrained axis (points toward (roughly) orbit normal)
+ 
