@@ -25,6 +25,15 @@ t = stlread(fullfile(stlpath, "cube.stl"), "binary"); // Imports the STL file
 tcolor = 12*ones(1, size(t.x,"c")) // Sets the colour of all surfaces of the fill
 // ----------------------------------------------------------------------------
 
+figure
+plot3d(-t.x,t.y,list(t.z,tcolor)); // Plots the model with the new colour
+f = get("current_figure") // Gets the handle of the current figure window
+scrnSize = get(0, "screensize_px"); // Gets the user's screen size
+f.figure_position = [scrnSize(3)/2 0]; // Sets the figure at the top and towards the middel of the user's screen
+a = gca()
+a.isoview = "on" // Sets the graphic window to an isometric view
+
+
 xIns = t.x; // |
 yIns = t.y; // | Model position
 zIns = t.z; // |
@@ -33,7 +42,7 @@ newx = [];
 newy = [];
 newz = [];
 
-for i = 1 : max(size(xIns))*min((xIns))
+for i = 1:max(size(xIns))*min(size(xIns))
     newx(i) = xRot([xIns(i),yIns(i),zIns(i)],%pi/2);
     newy(i) = yRot([xIns(i),yIns(i),zIns(i)],%pi/2);
     newz(i) = zRot([xIns(i),yIns(i),zIns(i)],%pi/2);
