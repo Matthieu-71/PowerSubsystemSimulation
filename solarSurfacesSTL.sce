@@ -1,6 +1,6 @@
 aSWriteIndex = 1; // Counter object, used to store the current write index of the active surfaces
-orbNorDir = zeros(1,3); // Object saving the direction vector of the orbit normal
-radOutDir = zeros(1,3); // Object saving the direction vector of the radial outward
+alignVec = zeros(1,3); // Object saving the direction vector of the orbit normal
+constVec = zeros(1,3); // Object saving the direction vector of the radial outward
 
 function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)
     // This function moves a surface from the left listbox to the right one, ei. a surface becomes a solar panel
@@ -116,6 +116,14 @@ function [alignVec] = saveRadDir()
     y = strtod(h_edit3.string); // Retrieves y component from GUI
     z = strtod(h_edit4.string); // Retrieves z component from GUI
     alignVec = [x y z];
+
+    scf(0); // Sets figure no.0 as the current editable 
+    delete("all") // Replots the figure with the new arrow
+    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+    xarrows([0 x],[0 y],[0 z],10,3); // Plots the new arrow
+    xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,2);
+    a = gca();
+    a.isoview = 'on'; // Changes the view to isometric 
 endfunction
 
 function [constVec] = saveOrbDir()
@@ -124,6 +132,14 @@ function [constVec] = saveOrbDir()
     y = strtod(h_edit6.string); // Retrieves y component from GUI
     z = strtod(h_edit7.string); // Retrieves z component from GUI
     constVec = [x y z];
+
+    scf(0); // Sets figure no.0 as the current editable 
+    delete("all") // Replots the figure with the new arrow
+    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+    xarrows([0 x],[0 y],[0 z],10,2); // Plots the new arrow
+    xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,3);
+    a = gca();
+    a.isoview = 'on'; // Changes the view to isometric 
 endfunction
 
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
@@ -263,4 +279,3 @@ end
 // Ask for components of the axis aligned with the zenith vector
 // alignVec - variable for the components of the aligned axis (points towards zenith, radially outwards)
 // constVec - variable for the components of the constrained axis (points toward (roughly) orbit normal)
- 
