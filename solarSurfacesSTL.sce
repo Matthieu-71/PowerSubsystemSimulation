@@ -1,4 +1,6 @@
 aSWriteIndex = 1; // Counter object, used to store the current write index of the active surfaces
+orbNorDir = zeros(1,3); // Object saving the direction vector of the orbit normal
+radOutDir = zeros(1,3); // Object saving the direction vector of the radial outward
 
 function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)
     // This function moves a surface from the left listbox to the right one, ei. a surface becomes a solar panel
@@ -88,20 +90,24 @@ function [] = activeSelect(t,tcolor,activSurfs)
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
 
-function [] = selectONSurf(t,allSurface)
+function [orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)
     slt = h_orSur.value;
-    disp(slt);
-    xVertices = t.x(:,slt) // Gets the x position of the vertices of the solar panel surfaces
-    yVertices = t.y(:,slt) // Gets the y position of the vertices of the solar panel surfaces
-    zVertices = t.z(:,slt) // Gets the z position of the vertices of the solar panel surfaces
+    xVertices = t.x(:,slt) // | 
+    yVertices = t.y(:,slt) // | Gets the coordinates of the vertices of the solar panel surfaces
+    zVertices = t.z(:,slt) // | 
     xy = [(xVertices(1)-xVertices(2)) (yVertices(1)-yVertices(2)) (zVertices(1)-zVertices(2))]
     xz = [(xVertices(1)-xVertices(3)) (yVertices(1)-yVertices(3)) (zVertices(1)-zVertices(3))]
-    n = cross(xy,xz)
+    n = cross(xy,xz) // Computes the normal vector
     n = n/sqrt(n(1)^2 + n(2)^2 + n(3)^2); // Computes unit vector
-    n = n*20;
-    disp(n) // for testing
+    orbNorDir = n;
+    n = n*20; // To be changed, calculates the size of the arrow
     scf(0); // Sets figure no.0 as the current editable 
-    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3)
+    delete("all") // Replots the figure with the new arrow
+    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3); // Plots the new arrow
+    a = gca();
+    a.isoview = 'on'; // Changes the view to isometric 
+    orbNorDir = n;
 endfunction
 
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
@@ -160,7 +166,7 @@ h_text3 = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI obje
 h_text4 = uicontrol(g,'style','text', 'position', [0 50 290 30]); // GUI object for radial outward surface prompt
 h_text5 = uicontrol(g,'style','text', 'position', [0 80 290 30]); // GUI object for orbit normal surface prompt
 h_raSur = uicontrol(g,'style','listbox','position', [290 50 60 30]); // GUI object for radial outward surface listbox
-h_orSur = uicontrol(g,'style','listbox','position', [290 80 60 30], 'callback', 'selectONSurf(t,allSurface)'); // GUI object for orbit normal surface listbox
+h_orSur = uicontrol(g,'style','listbox','position', [290 80 60 30], 'callback', '[orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)'); // GUI object for orbit normal surface listbox
 h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
 h_pushR = uicontrol(g,'style','pushbutton','position', [550 250 50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for pushbutton moving object from left to right 
@@ -215,8 +221,8 @@ set(h_activ, 'string', s) // Sets the new list to the right listbox
 s = []; // Resets the string 
 for i = 1:length(allSurface)
 
-        // Makes the new list to output to the direction listboxs
-        s = s + msprintf('@s %0.0f |',allSurface(i)),
+    // Makes the new list to output to the direction listboxs
+    s = s + msprintf('@s %0.0f |',allSurface(i)),
 
 end
 set(h_raSur, 'string', s) // Sets the new list to the radial outward listbox
