@@ -16,9 +16,8 @@ while x == 0
     //sleep(1) 
 end
 save(outFilePath,tcolor,alignVec,constVec)
-[xAtt,yAtt,zAtt] = AttitudeAdjust(t.x,t.y,t.z,alignVec,constVec,[],[]);
 exec(pwd()+'\AttitudeAdjust.sci',-1) // Executes attitude script
-[]
+[xAtt,yAtt,zAtt] = AttitudeAdjust(t.x,t.y,t.z,alignVec,constVec,[],[]);
 exec(pwd()+'\EarthOrbiterSystem.sce',-1) // Executes computation script
 disp('done')
 
