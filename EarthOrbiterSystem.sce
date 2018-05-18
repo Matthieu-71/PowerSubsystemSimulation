@@ -8,7 +8,6 @@
 //  Part 1 : Definition of proprietary functions
 //      Part 1a : trace_traj function
 //      Part 1b : plot_sphere function
-//      Part 1c : AttitudeAdjust function
 //  Part 2 : Definition of global variables
 //      Part 2a : initialization of frame related variables
 //      Part 2b : initialization of orbit related variables
@@ -20,8 +19,7 @@
 //      Part 4a : Creation of the Earth spheroid
 //      Part 4b : Creation of the 'space' environment
 //      Part 4c : Insertion of the orbital trajectory
-//      PART 4d : Insert STL model of spacecraft
-//      Part 4e : Motion of the satellite
+//      Part 4d : Motion of the satellite
 CL_init(); // Importation of celestLab library   
 
 
@@ -59,73 +57,6 @@ function [] = plot_sphere(r,n,d)
     a.isoview = 'on'; // Changes the view to isometric 
     a.grid = [1 1]; // Adds grid lines to the graphical object
 endfunction
-// Part 1c --- AttitudeAdjust function ----------------------------------------
-// This function will deal with the intial attitude conditions provided by the user. Here the axes of the STL file will be compared to the QSW frame and will be rotated to allignment. This will set the initial orientation of the spacecraft as it is introduced to the space environment.
-
-function [xAtt,yAtt,zAtt] = AttitudeAdjust(xold,yold,zold,alignVec,constVec,r,v)
-    clc // Clear any text from the console
-
-    if r == [] & v==[]
-        // PART 1: Create the QSW frame 
-        qsw_x = alignVec; // Redefine the aligned vector as the x-axis in QSW
-        qsw_z = constVec; // Redefine the contrained vector as the z-axis in QSW
-        qsw_y = cross(qsw_x,qsw_z); // Calculate a perpendicular y-axis in QSW
-        qsw_z = cross(qsw_x,qsw_y); // Calculate a perpendicular z-axis in QSW
-
-        // PART 2: Transform the QSW axes into unit vectors
-        qsw_x = qsw_x/norm(qsw_x); // Make the x-axis in QSW a unit vector
-        qsw_y = qsw_y/norm(qsw_y); // Make the y-axis in QSW a unit vector
-        qsw_z = qsw_z/norm(qsw_z); // Make the z-axis in QSW a unit vector
-
-        // PART 3: Create the transformation matix
-        R = [qsw_x;qsw_y;qsw_z]; // Assemble the transformation matrix
-
-        // PART 4: Rotate the stl model to align with QSW {X,Y,Z}
-        [row, col] = size(t.x); // Gather the size of the STL data
-        xAtt = xold; // Redefine the STL x data for attitude determination use
-        yAtt = yold; // Redefine the STL y datafor attitude determination use
-        zAtt = zold; // Redefine the STL z datafor attitude determination use
-        for i = 1:(row*col) // Initialize for loop to cycle through STL data
-            tempOut = R*[xAtt(i);yAtt(i);zAtt(i)]; // Transform the old data point to be alligned with the QSW frame
-            xAtt(i) = tempOut(1); // Distribute output into matrices for x components
-            yAtt(i) = tempOut(2); // Distribute output into matrices for y components
-            zAtt(i) = tempOut(3); // Distribute output into matrices for z components
-        end // End for loop
-    else
-        // PART 1: Create the QSW frame 
-        qsw_x = r; // Redefine the aligned vector as the x-axis in QSW
-        qsw_z = cross(r,v); // Redefine the contrained vector as the z-axis in QSW
-        qsw_y = cross(qsw_x,qsw_z); // Calculate a perpendicular y-axis in QSW
-        qsw_z = cross(qsw_x,qsw_y); // Calculate a perpendicular z-axis in QSW
-
-        // PART 2: Transform the QSW axes into unit vectors
-        qsw_x = qsw_x/norm(qsw_x); // Make the x-axis in QSW a unit vector
-        qsw_y = qsw_y/norm(qsw_y); // Make the y-axis in QSW a unit vector
-        qsw_z = qsw_z/norm(qsw_z); // Make the z-axis in QSW a unit vector
-
-        // PART 3: Create the transformation matix
-        R = [qsw_x;qsw_y;qsw_z]; // Assemble the transformation matrix
-
-        // PART 4: Rotate the stl model to align with QSW {X,Y,Z}
-        [row, col] = size(t.x); // Gather the size of the STL data
-        xAtt = xold; // Redefine the STL x data for attitude determination use
-        yAtt = yold; // Redefine the STL y datafor attitude determination use
-        zAtt = zold; // Redefine the STL z datafor attitude determination use
-        for i = 1:(row*col) // Initialize for loop to cycle through STL data
-            tempOut = R*[xAtt(i);yAtt(i);zAtt(i)]; // Transform the old data point to be alligned with the QSW frame
-            xAtt(i) = tempOut(1); // Distribute output into matrices for x components
-            yAtt(i) = tempOut(2); // Distribute output into matrices for y components
-            zAtt(i) = tempOut(3); // Distribute output into matrices for z components
-        end // End for loop
-    end
-
-    scf(0); // Sets figure no.0 as the current editable 
-    delete("all") // Replots the figure with the new arrow
-    plot3d(xAtt,yAtt,list(zAtt,tcolor)); // Plot newly rotated STL
-    a = gca(); // Get current axis properties
-    a.isoview = 'on'; // Changes the view to isometric 
-endfunction
-
 clc // Clear unimportant warnings from console
 
 // PART 2 --- DEFINITION OF GLOBAL VARIABLES ----------------------------------
@@ -208,17 +139,9 @@ plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 pos_sun = CL_eph_sun(cjd);
 
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
-
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
 
-
-//  PART 4d --- Insertion STL model of spacecraft --------------------------------
-if Xanimate == 1 then // Check for animation condition
-    xIns = (t.x*enlarge) - pos_eci(1,1); // |
-    yIns = (t.y*enlarge) + pos_eci(2,1); // | Changes the position of all vertices to place the object in the frame
-    zIns = (t.z*enlarge) + pos_eci(3,1); // |
-    plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-    // Part 4e --- Motion of the satellite ----------------------------------------
+    // Part 4d --- Motion of the satellite ----------------------------------------
     for i = 1:max(size(pos_eci)) // For mission duration
         if i > 1 // Make sure spacecraft has done one orbit
             delete(h.children(1)) // Deletes the Sun-earth vector
@@ -226,9 +149,11 @@ if Xanimate == 1 then // Check for animation condition
         end
         misstime=i*tstep;
         timestring=string(misstime)
-        xIns = (t.x*enlarge) - pos_eci(1,i); // |
-        yIns = (t.y*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
-        zIns = (t.z*enlarge) + pos_eci(3,i); // |
+        [xAtt,yAtt,zAtt] = AttitudeAdjust(xAtt,yAtt,zAtt,[],[],[pos_eci(1,i) pos_eci(2,i) pos_eci(3,i)],[vel_eci(1,i) vel_eci(2,i) vel_eci(3,i)])
+        scf(1)
+        xIns = (xAtt*enlarge) - pos_eci(1,i); // |
+        yIns = (yAtt*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
+        zIns = (zAtt*enlarge) + pos_eci(3,i); // |
         normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]); // Calculate the magnitude of the Sun-Earth vector
         for j = 1:3
             sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun); // Assign the components to the Sun-Earth Vector
@@ -239,6 +164,6 @@ if Xanimate == 1 then // Check for animation condition
         h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
         plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
         h.isoview="on";//easier on the eyes, isometric view of plot
-        sleep(1000/60) // Pauses the loop for 16.6-7 ms (60 Hz animation)
+        sleep(500) // Pauses the loop for 16.6-7 ms (60 Hz animation)
     end
 end
