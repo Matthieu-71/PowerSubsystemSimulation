@@ -140,29 +140,29 @@ pos_sun = CL_eph_sun(cjd);
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
 
-    // Part 4d --- Motion of the satellite ----------------------------------------
-    for i = 1:max(size(pos_eci)) // For mission duration
-        if i > 1 // Make sure spacecraft has done one orbit
-            delete(h.children(1)) // Deletes the Sun-earth vector
-            delete(h.children(1)) // Deletes the last STL
-        end
-        misstime=i*tstep;
-        timestring=string(misstime)
-        [xAtt,yAtt,zAtt] = AttitudeAdjust(xAtt,yAtt,zAtt,[],[],[pos_eci(1,i) pos_eci(2,i) pos_eci(3,i)],[vel_eci(1,i) vel_eci(2,i) vel_eci(3,i)])
-        scf(1)
-        xIns = (xAtt*enlarge) - pos_eci(1,i); // |
-        yIns = (yAtt*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
-        zIns = (zAtt*enlarge) + pos_eci(3,i); // |
-        normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]); // Calculate the magnitude of the Sun-Earth vector
-        for j = 1:3
-            sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun); // Assign the components to the Sun-Earth Vector
-        end
-        xarrows([0 sun_vect(1)],[0 sun_vect(2)],[0 sun_vect(3)],20000,color(255,179,0)) //Create Sun-Earth vector
-        xtitle(['t+ ',timestring,'seconds']);
-        h = gca(); // Gets the current graphic axes
-        h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
-        plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-        h.isoview="on";//easier on the eyes, isometric view of plot
-        sleep(500) // Pauses the loop for 16.6-7 ms (60 Hz animation)
+// Part 4d --- Motion of the satellite ----------------------------------------
+for i = 1:max(size(pos_eci)) // For mission duration
+    if i > 1 // Make sure spacecraft has done one orbit
+        delete(h.children(1)) // Deletes the Sun-earth vector
+        delete(h.children(1)) // Deletes the last STL
     end
+    misstime=i*tstep;
+    timestring=string(misstime)
+    [xAtt,yAtt,zAtt] = AttitudeAdjust(xAtt,yAtt,zAtt,[],[],[pos_eci(1,i) pos_eci(2,i) pos_eci(3,i)],[vel_eci(1,i) vel_eci(2,i) vel_eci(3,i)]);
+    scf(1)
+    xIns = (xAtt*enlarge) - pos_eci(1,i); // |
+    yIns = (yAtt*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
+    zIns = (zAtt*enlarge) + pos_eci(3,i); // |
+    normPos_sun = norm([pos_sun(1,i) pos_sun(2,i) pos_sun(3,i)]); // Calculate the magnitude of the Sun-Earth vector
+    for j = 1:3
+        sun_vect(j) = 1.5*frame*(pos_sun(j,i)/normPos_sun); // Assign the components to the Sun-Earth Vector
+    end
+    xarrows([0 sun_vect(1)],[0 sun_vect(2)],[0 sun_vect(3)],20000,color(255,179,0)) //Create Sun-Earth vector
+    xtitle(['t+ ',timestring,'seconds']);
+    h = gca(); // Gets the current graphic axes
+    h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
+    plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
+    h.isoview="on";//easier on the eyes, isometric view of plot
+    sleep(100060) // Pauses the loop for 16.6-7 ms (60 Hz animation)
+end
 end
