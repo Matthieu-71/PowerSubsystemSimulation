@@ -3,6 +3,11 @@
 //Input: Satellite Model, Attitude, mission time, and panel efficiency
 //Output: Power over time for each solar panel surface
 //Author: Arvin Tangestanian - May 18th 2018
+
+xVertices = t.x(:,activSurfs) // Gets the x position of the vertices of the solar panel surfaces
+yVertices = t.y(:,activSurfs) // Gets the y position of the vertices of the solar panel surfaces
+zVertices = t.z(:,activSurfs) // Gets the z position of the vertices of the solar panel surfaces
+
 n = zeros(length(activSurfs),3) // Initialize matrix for storage of normal vectors
 for i = 1:length(activSurfs)
     // For each surface this loop computes the normal vector
@@ -41,11 +46,12 @@ sat_sun_eci = pos_sun - pos_eci;//Sat-Sun in ECI
 sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)//Sat-Sun in QSW
 
 PowerSurf = []; //empty array, power computed by each surface
+figure
 for i = 1: length(activSurfs)
     for t = 1:max(size(pos_eci))
     VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, i.e cos(theta)
     PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power of each surface at each time step
     end
+    plot(PowerSurf(i,:))
 end
 
-plot(PowerSurf(1,:))

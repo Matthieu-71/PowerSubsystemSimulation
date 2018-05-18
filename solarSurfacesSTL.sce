@@ -3,6 +3,11 @@ alignVec = zeros(1,3); // Object saving the direction vector of the orbit normal
 constVec = zeros(1,3); // Object saving the direction vector of the radial outward
 crntUnitState = zeros(1,3); // Object saving the states of the units of the model
 
+function [eff] = efficiency()
+    eff = strtod(h_edit1.string);
+    disp(eff)
+endfunction
+
 function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)
     // This function moves a surface from the left listbox to the right one, ei. a surface becomes a solar panel
     moveRight = h_deact.value; // Gets the ID of the surface that needs to be moved
@@ -240,7 +245,7 @@ h_text8  = uicontrol(g,'style','text', 'position', [215 110  35 20], 'string', '
 h_text9  = uicontrol(g,'style','text', 'position', [255 110  35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
 h_text10 = uicontrol(g,'style','text', 'position', [  0 360 180 20]); // GUI object for area units promt
 
-h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20], 'horizontalalignment', 'center'); // GUI object for entering panel efficiency
+h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20], 'horizontalalignment', 'center', 'callback','[eff] = efficiency()'); // GUI object for entering panel efficiency
 h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(1))); // GUI object for entering radial X component
 h_edit3 = uicontrol(g,'style','edit', 'position', [215  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(2))); // GUI object for entering radial Y component
 h_edit4 = uicontrol(g,'style','edit', 'position', [255  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(3))); // GUI object for entering radial Z component
@@ -262,6 +267,7 @@ h_orbSt = uicontrol(g,'style','pushbutton','position', [290  50  60 30],'callbac
 
 // --- Definition of uicontrol object properties --------------------
 set(h_title, 'string', 'Solar Panel Surface Selector', 'fontsize', 24,'horizontalalignment', 'center'); // Writes the title
+
 set(h_text1, 'string', msprintf('There are %0.0f surfaces in total, select the ones that are solar panels',length(tcolor))); // Writes the description sentence 
 set(h_text2, 'string', 'Non-solar-panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Writes the header of the left listbox
 set(h_text3, 'string', 'Solar panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Wrties the header of the right listbox
