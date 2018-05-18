@@ -1,8 +1,8 @@
-// normalCalc v 0.0.2
+// normalCalc v 0.0.3
 // This script computes the normals of the surface selected a solar panels
 // Authour : Matthieu D. 
 // Created on 16 May 2018
-// Last modified 16 May 2018
+// Last modified 18 May 2018
 
 xVertices = t.x(:,activSurfs) // Gets the x position of the vertices of the solar panel surfaces
 yVertices = t.y(:,activSurfs) // Gets the y position of the vertices of the solar panel surfaces
