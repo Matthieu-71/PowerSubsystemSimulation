@@ -39,20 +39,11 @@ else
     S = S*1e-6; //[W/mm^2]           
 end
 end
-//Step 1: Find Area of Solar Panel surfaces
-//  I have SurfArea, storing Area of each panel surface
-//Step 2: Find Surace Normal Vector
-//  I have n , storing the normal for each panel surface
-//Step 3: Find Satellite-Sun Vector
-//Earth-Sun in ECI
-// we have pos_sun = CL_eph_sun(cjd);
-//Earth-Sat in ECI
-// we have pos_eci
-//Sat-Sun in ECI
-sat_sun_eci = pos_sun - pos_eci;
-//Sat-Sun in QSW
-sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)
-//Step 4: Compute with P= nu*S*A*cos(theta)
+
+sat_sun_eci = pos_sun - pos_eci;//Sat-Sun in ECI
+
+sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)//Sat-Sun in QSW
+
 PowerSurf = []; //empty array, power computed by each surface
 for i = 1: length(activSurfs)
     for t = 1: length(pos_eci)
@@ -60,6 +51,3 @@ for i = 1: length(activSurfs)
     PowerSurf(i,t) = abs(nu*S*SurfArea(i)*VF); //Power of each surface at each time step
     end
 end
-figure
-
-
