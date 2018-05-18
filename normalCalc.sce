@@ -23,4 +23,3 @@ end
 
 s = msprintf("Computed %0.0f surface normal unit vectors.", length(activSurfs));
 disp(s)
-

@@ -1,6 +1,7 @@
 aSWriteIndex = 1; // Counter object, used to store the current write index of the active surfaces
 alignVec = zeros(1,3); // Object saving the direction vector of the orbit normal
 constVec = zeros(1,3); // Object saving the direction vector of the radial outward
+crntUnitState = zeros(1,3); // Object saving the states of the units of the model
 
 function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)
     // This function moves a surface from the left listbox to the right one, ei. a surface becomes a solar panel
@@ -89,26 +90,26 @@ function [] = activeSelect(t,tcolor,activSurfs)
     a = gca();
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
-
-function [orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)
-    slt = h_orSur.value;
-    xVertices = t.x(:,slt) // | 
-    yVertices = t.y(:,slt) // | Gets the coordinates of the vertices of the solar panel surfaces
-    zVertices = t.z(:,slt) // | 
-    xy = [(xVertices(1)-xVertices(2)) (yVertices(1)-yVertices(2)) (zVertices(1)-zVertices(2))]
-    xz = [(xVertices(1)-xVertices(3)) (yVertices(1)-yVertices(3)) (zVertices(1)-zVertices(3))]
-    n = cross(xy,xz) // Computes the normal vector
-    n = n/sqrt(n(1)^2 + n(2)^2 + n(3)^2); // Computes unit vector
-    orbNorDir = n;
-    n = n*20; // To be changed, calculates the size of the arrow
-    scf(0); // Sets figure no.0 as the current editable 
-    delete("all") // Replots the figure with the new arrow
-    plot3d(-t.x,t.y,list(t.z,tcolor)); 
-    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3); // Plots the new arrow
-    a = gca();
-    a.isoview = 'on'; // Changes the view to isometric 
-    orbNorDir = n;
-endfunction
+//
+//function [orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)
+//    slt = h_orSur.value;
+//    xVertices = t.x(:,slt) // | 
+//    yVertices = t.y(:,slt) // | Gets the coordinates of the vertices of the solar panel surfaces
+//    zVertices = t.z(:,slt) // | 
+//    xy = [(xVertices(1)-xVertices(2)) (yVertices(1)-yVertices(2)) (zVertices(1)-zVertices(2))]
+//    xz = [(xVertices(1)-xVertices(3)) (yVertices(1)-yVertices(3)) (zVertices(1)-zVertices(3))]
+//    n = cross(xy,xz) // Computes the normal vector
+//    n = n/sqrt(n(1)^2 + n(2)^2 + n(3)^2); // Computes unit vector
+//    orbNorDir = n;
+//    n = n*20; // To be changed, calculates the size of the arrow
+//    scf(0); // Sets figure no.0 as the current editable 
+//    delete("all") // Replots the figure with the new arrow
+//    plot3d(-t.x,t.y,list(t.z,tcolor)); 
+//    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3); // Plots the new arrow
+//    a = gca();
+//    a.isoview = 'on'; // Changes the view to isometric 
+//    orbNorDir = n;
+//endfunction
 
 function [alignVec] = saveRadDir()
     // This function retrieves the components of the radial outward direction and stores them in the appropriate object 
@@ -140,6 +141,19 @@ function [constVec] = saveOrbDir()
     xarrows([0 alignVec(1)],[0 alignVec(2)],[0 alignVec(3)],10,3);
     a = gca();
     a.isoview = 'on'; // Changes the view to isometric 
+endfunction
+
+function [crntUnitState] = unitRadioButton(crntUnitState)
+    // This function is executed when a radiobutton for units is selected
+    // It gets the ID of the chosen radiobutton and sets the other to zero
+    isM  = h_metre.value; // |
+    isCM = h_centi.value; // | Gets the states of the radiobuttons
+    isMM = h_milli.value; // |
+    nextState =  [isM isCM isMM] - crntUnitState; // Determines the new state
+    set(h_metre,'value',nextState(1)); // | 
+    set(h_centi,'value',nextState(2)); // | Sets the radiobuttons to their new state
+    set(h_milli,'value',nextState(3)); // |
+    crntUnitState = nextState;
 endfunction
 
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
@@ -191,16 +205,17 @@ g.screen_position = [0 0]; // Sets the position to the top left corner of the us
 g.axes_size =  [800 500]; // Sets the size of the screen to x = 800 px and y = 500 px
 
 // --- Definition of uicontrol objects ------------------------------
-h_title = uicontrol(g,'style','text', 'position', [0 440 350 60]); // GUI object for title
-h_text1 = uicontrol(g,'style','text', 'position', [0 400 350 40]); // GUI object for description sentence
-h_text2 = uicontrol(g,'style','text', 'position', [350 460 200 40]); // GUI object for deactive panel listbox label
-h_text3 = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI object for active panel listbox label
-h_text4 = uicontrol(g,'style','text', 'position', [0 80 175 30]); // GUI object for radial outward surface prompt
-h_text5 = uicontrol(g,'style','text', 'position', [0 50 175 30]); // GUI object for orbit normal surface prompt
-h_text6 = uicontrol(g,'style','text', 'position', [0 380 290 20]); // GUI object for panel efficiency prompt
-h_text7 = uicontrol(g,'style','text', 'position', [175 110 35 20], 'string', 'X','horizontalalignment', 'center'); // GUI object for X column
-h_text8 = uicontrol(g,'style','text', 'position', [215 110 35 20], 'string', 'Y','horizontalalignment', 'center'); // GUI object for Y column
-h_text9 = uicontrol(g,'style','text', 'position', [255 110 35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
+h_title  = uicontrol(g,'style','text', 'position', [0 440 350 60]); // GUI object for title
+h_text1  = uicontrol(g,'style','text', 'position', [0 400 350 40]); // GUI object for description sentence
+h_text2  = uicontrol(g,'style','text', 'position', [350 460 200 40]); // GUI object for deactive panel listbox label
+h_text3  = uicontrol(g,'style','text', 'position', [600 460 200 40]); // GUI object for active panel listbox label
+h_text4  = uicontrol(g,'style','text', 'position', [0 80 175 30]); // GUI object for radial outward surface prompt
+h_text5  = uicontrol(g,'style','text', 'position', [0 50 175 30]); // GUI object for orbit normal surface prompt
+h_text6  = uicontrol(g,'style','text', 'position', [0 380 290 20]); // GUI object for panel efficiency prompt
+h_text7  = uicontrol(g,'style','text', 'position', [175 110  35 20], 'string', 'X','horizontalalignment', 'center'); // GUI object for X column
+h_text8  = uicontrol(g,'style','text', 'position', [215 110  35 20], 'string', 'Y','horizontalalignment', 'center'); // GUI object for Y column
+h_text9  = uicontrol(g,'style','text', 'position', [255 110  35 20], 'string', 'Z','horizontalalignment', 'center'); // GUI object for Z column
+h_text10 = uicontrol(g,'style','text', 'position', [  0 360 180 20]); // GUI object for area units promt
 
 h_edit1 = uicontrol(g,'style','edit', 'position', [290 380 60 20], 'horizontalalignment', 'center'); // GUI object for entering panel efficiency
 h_edit2 = uicontrol(g,'style','edit', 'position', [175  80 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",alignVec(1))); // GUI object for entering radial X component
@@ -210,8 +225,11 @@ h_edit5 = uicontrol(g,'style','edit', 'position', [175  50 35 30], 'horizontalal
 h_edit6 = uicontrol(g,'style','edit', 'position', [215  50 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",constVec(2))); // GUI object for entering orbit normal Y component
 h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30], 'horizontalalignment', 'center','string', msprintf("%0.0f",constVec(3))); // GUI object for entering orbit normal Z component
 
-h_activ = uicontrol(g,'style','listbox','position', [600 0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
-h_deact = uicontrol(g,'style','listbox','position', [350 0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
+h_activ = uicontrol(g,'style','listbox','position', [600   0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
+h_deact = uicontrol(g,'style','listbox','position', [350   0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
+h_metre = uicontrol(g,'style','radiobutton','position', [180 360  50  20],'string','m' ,'callback','[currentState] = unitRadioButton(currentState)'); // GUI object for m  radiobutton
+h_centi = uicontrol(g,'style','radiobutton','position', [230 360  50  20],'string','cm','callback','[currentState] = unitRadioButton(currentState)'); // GUI object for cm radiobutton
+h_milli = uicontrol(g,'style','radiobutton','position', [280 360  50  20],'string','mm','callback','[currentState] = unitRadioButton(currentState)'); // GUI object for mm radiobutton
 
 h_pushR = uicontrol(g,'style','pushbutton','position', [550 250  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
 h_pushL = uicontrol(g,'style','pushbutton','position', [550 200  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
@@ -227,6 +245,8 @@ set(h_text3, 'string', 'Solar panel surfaces', 'fontsize', 16,'horizontalalignme
 set(h_text4, 'string', 'Enter radial outward direction : ', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
 set(h_text5, 'string', 'Enter orbit normal direction : ', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
 set(h_text6, 'string', 'Enter solar panel efficiency, number between 0 and 1 : ', 'fontsize', 12); // Wrties the prompt for the panel efficiency
+set(h_text10,'string', 'Select the units of the model : ', 'fontsize', 12); // Wrties the prompt for area units
+
 set(h_pushR, 'string', '>>'); // Writes to the right pushbutton
 set(h_pushL, 'string', '<<'); // Writes to the left pushbutton
 set(h_pushE, 'string', 'End Selection Process'); // Write to the end pushbutton
@@ -273,8 +293,6 @@ for i = 1:length(allSurface)
     s = s + msprintf('@s %0.0f |',allSurface(i)),
 
 end
-
-
 
 // Ask for components of the axis aligned with the zenith vector
 // alignVec - variable for the components of the aligned axis (points towards zenith, radially outwards)
