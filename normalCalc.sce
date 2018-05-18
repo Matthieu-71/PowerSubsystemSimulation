@@ -31,6 +31,7 @@ end
 
 s = msprintf("Computed %0.0f surface normal unit vectors.", length(activSurfs));
 disp(s)
+<<<<<<< HEAD
 
 //Panel Power
 //This script will calculate the power produced by the satellite solar panels
@@ -48,3 +49,5 @@ S=1366; // [W/m^2] (later change this to function of time)
 //Step 3: Find Satellite-Sun Vector
 //  
 //Step 4: Compute with P= nu*S*A*cos(theta)
+=======
+>>>>>>> 7ea102f5cf0c83d913ded8ff72262cee4fe4274c
