@@ -38,7 +38,7 @@ REarth  = 6378                   // Radius of the Earth [km]acacqsfsqdf
 r = 1; orig=[0 0 0]; div = 100;
 xx = r*cos(linspace(-%pi/2,%pi/2,div));
 yy = r*sin(linspace(0,%pi*2,div))
-xx = 11;//r*cos(alp).*sin(tet)
+//xx = 11;//r*cos(alp).*sin(tet)
 //[xx,yy,zz]=eval3dp(sph,linspace(-%pi/2,%pi/2,80),linspace(0,%pi*2,80));
 [row col] = size(zz)
 colour = 5*ones(row,col);
