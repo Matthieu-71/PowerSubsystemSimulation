@@ -16,28 +16,34 @@ for i = 1:length(activSurfs)
     n(i,:) = cross(xy,xz)
     n(i,:) = n(i,:)/sqrt(n(i,1)^2 + n(i,2)^2 + n(i,3)^2); // Computes unit vector
    
-  //Find the area of each surface
   Lenxy=norm(xy);// |
   Lenxz=norm(xz);// |Length of each side
   Lenyz=norm(yz);// |
   surfp=(Lenxy+Lenxz+Lenyz)/2;// Half the Perimeter
-  SurfArea(i)=sqrt(surfp*(surfp-Lenxy)*(surfp-Lenxz)*(surfp-Lenyz));//Heron's Formula
-    disp(n(i,:)) // for testing
+  SurfArea(i)=sqrt(surfp*(surfp-Lenxy)*(surfp-Lenxz)*(surfp-Lenyz));//Heron's Formula for Area of a triangle
 end
 
-s = msprintf("Computed %0.0f surface normal unit vectors.", length(activSurfs));
-disp(s)
 
 //Parameters
 S=1366; // [W/m^2] (later change this to function of time)
-nu = strtod(5_text6); //Panel efficiency
+nu = strtod('5_text6'); //Panel efficiency
+//Changing the solar constant to match dimensions of the satellite
+if      crntUnitState(1,1) == 1 then
+    panelunits='m';
+    //S=1366 [W/m^2]
+else if crntUnitState(1,2) == 1 then
+    panelunits='cm';
+    S = S*1e-4; //[W/cm^2]
+else
+    panelunits='mm';
+    S = S*1e-6; //[W/mm^2]           
+end
+end
 //Step 1: Find Area of Solar Panel surfaces
 //  I have SurfArea, storing Area of each panel surface
-
 //Step 2: Find Surace Normal Vector
 //  I have n , storing the normal for each panel surface
 //Step 3: Find Satellite-Sun Vector
-
 //Earth-Sun in ECI
 // we have pos_sun = CL_eph_sun(cjd);
 //Earth-Sat in ECI
@@ -45,7 +51,15 @@ nu = strtod(5_text6); //Panel efficiency
 //Sat-Sun in ECI
 sat_sun_eci = pos_sun - pos_eci;
 //Sat-Sun in QSW
-vect_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun)
-
+sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)
 //Step 4: Compute with P= nu*S*A*cos(theta)
+PowerSurf = []; //empty array, power computed by each surface
+for i = 1: length(activSurfs)
+    for t = 1: length(pos_eci)
+    VF = (CL_dot(n(1),sat_sun_qsw(1))/(norm(n(1))*norm(sat_sun_qsw(1)))); //View factor from surface to sun
+    PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power of each surface at each time step
+    end
+end
+
+
 
