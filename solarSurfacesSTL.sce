@@ -63,10 +63,16 @@ function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs,
     aSWriteIndex = aSWriteIndex - 1; // Decrements the counter object
 endfunction
 
-function [x] = onEndButton()
+function [x] = onEndButton(crntUnitState)
     // This function allows the user to proceed to the next step of the program
-    x = 1; // Variable needed to do so
-    close(g); // Closes the solar panel selector GUI
+    disp(norm(crntUnitState))
+    if norm(crntUnitState) == 0 then
+        error(5,'No units selected!');
+        x = 0;
+    else
+        x = 1; // Variable needed to proceed to next
+        close(g); // Closes the solar panel selector GUI
+    end
 endfunction
 
 function [] = deactiveSelect(t,tcolor,deactSurfs)
@@ -150,10 +156,20 @@ function [crntUnitState] = unitRadioButton(crntUnitState)
     isCM = h_centi.value; // | Gets the states of the radiobuttons
     isMM = h_milli.value; // |
     nextState =  [isM isCM isMM] - crntUnitState; // Determines the new state
+    for i = 1:3
+        // Issues arise if a same radiobutton is selected and then deselected
+        // This loop fixes this
+        if nextState(i) < 0
+            nextState(i) = 0;
+        elseif nextState(i) > 1
+            nextState(i) = 0;
+        end
+    end
     set(h_metre,'value',nextState(1)); // | 
     set(h_centi,'value',nextState(2)); // | Sets the radiobuttons to their new state
     set(h_milli,'value',nextState(3)); // |
     crntUnitState = nextState;
+    disp(crntUnitState)
 endfunction
 
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
@@ -227,13 +243,13 @@ h_edit7 = uicontrol(g,'style','edit', 'position', [255  50 35 30], 'horizontalal
 
 h_activ = uicontrol(g,'style','listbox','position', [600   0 200 460],'callback', 'activeSelect(t,tcolor,activSurfs)') // GUI object for active panel listbox
 h_deact = uicontrol(g,'style','listbox','position', [350   0 200 460],'callback', ' deactiveSelect(t,tcolor,deactSurfs)') // GUI object for deactive panel listbox
-h_metre = uicontrol(g,'style','radiobutton','position', [180 360  50  20],'string','m' ,'callback','[currentState] = unitRadioButton(currentState)'); // GUI object for m  radiobutton
-h_centi = uicontrol(g,'style','radiobutton','position', [230 360  50  20],'string','cm','callback','[currentState] = unitRadioButton(currentState)'); // GUI object for cm radiobutton
-h_milli = uicontrol(g,'style','radiobutton','position', [280 360  50  20],'string','mm','callback','[currentState] = unitRadioButton(currentState)'); // GUI object for mm radiobutton
+h_metre = uicontrol(g,'style','radiobutton','position', [180 360  50  20],'string','m' ,'callback','[crntUnitState] = unitRadioButton(crntUnitState)'); // GUI object for m  radiobutton
+h_centi = uicontrol(g,'style','radiobutton','position', [230 360  50  20],'string','cm','callback','[crntUnitState] = unitRadioButton(crntUnitState)'); // GUI object for cm radiobutton
+h_milli = uicontrol(g,'style','radiobutton','position', [280 360  50  20],'string','mm','callback','[crntUnitState] = unitRadioButton(crntUnitState)'); // GUI object for mm radiobutton
 
 h_pushR = uicontrol(g,'style','pushbutton','position', [550 250  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
 h_pushL = uicontrol(g,'style','pushbutton','position', [550 200  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
-h_pushE = uicontrol(g,'style','pushbutton','position', [  0   0 350 50],'callback', '[x] = onEndButton()'); // GUI object for pushbutton to next step
+h_pushE = uicontrol(g,'style','pushbutton','position', [  0   0 350 50],'callback', '[x] = onEndButton(crntUnitState)'); // GUI object for pushbutton to next step
 h_radSt = uicontrol(g,'style','pushbutton','position', [290  80  60 30],'callback', '[alignVec] = saveRadDir()'); // GUI object for saving radial outward direction
 h_orbSt = uicontrol(g,'style','pushbutton','position', [290  50  60 30],'callback', '[constVec] = saveOrbDir()'); // GUI object for saving orbit normal direction
 
