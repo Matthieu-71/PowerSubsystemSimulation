@@ -59,7 +59,7 @@ function [xAtt,yAtt,zAtt] = AttitudeAdjust(xold,yold,zold,alignVec,constVec,r,v)
 
     scf(0); // Sets figure no.0 as the current editable 
     delete("all") // Replots the figure with the new arrow
-    plot3d(xAtt,yAtt,list(zAtt,tcolor)); 
-    a = gca();
+    plot3d(xAtt,yAtt,list(zAtt,tcolor)); // Plot newly rotated STL
+    a = gca(); // Get current axis properties
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
