@@ -96,7 +96,7 @@ CL_defParam("Start day",            val = dt(6)),..
 CL_defParam("Start hour",           val = dt(7)),..
 CL_defParam("Start minute",         val = dt(8)),..
 CL_defParam("Start second",         val = dt(9)),..
-CL_defParam("Mission duration",     val = 1/24,        units = ['days']),..
+CL_defParam("Mission duration",     val = 3/24,        units = ['days']),..
 CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
 
