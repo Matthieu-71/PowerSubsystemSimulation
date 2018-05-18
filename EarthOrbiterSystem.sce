@@ -101,7 +101,6 @@ CL_defParam("Start second",         val = dt(9)),..
 CL_defParam("Mission duration",     val = 1/24,        units = ['days']),..
 CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
- 
 //cjd0-Mission Start Date
 cjd0 = CL_dat_cal2cjd(YYYY,MM,DD,HH,tMin,tSec);//Calendar date to modified Julian Day
 //cjd is 1xn array, where n is number of timesteps throughout mission duration
@@ -146,11 +145,6 @@ param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:));
 
 //  PART 4d --- Insertion STL model of spacecraft --------------------------------
 if Xanimate == 1 then // Check for animation condition
-xIns = (t.x*enlarge) - pos_eci(1,1); // |
-yIns = (t.y*enlarge) + pos_eci(2,1); // | Changes the position of all vertices to place the object in the frame
-zIns = (t.z*enlarge) + pos_eci(3,1); // |
-plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
-// Part 4e --- Motion of the satellite ----------------------------------------
     for i = 1:max(size(pos_eci)) // For mission duration
         if i > 1 // Make sure spacecraft has done one orbit
             delete(h.children(1)) // Deletes the Sun-earth vector

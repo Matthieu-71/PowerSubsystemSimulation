@@ -11,7 +11,6 @@ function [outx, outy, outz] = xRot(vec,theta)
 endfunction
 
 function [outx, outy, outz] = yRot(vec,theta)
-  // Jessie lifts like a daddy
   R2 = [cos(theta),0,-sin(theta);0,1,0;sin(theta),0,cos(theta)];
   out = vec*R2;
   outx = out(1);
