@@ -1,9 +1,8 @@
-
 // EarthOrbiterSystem v 0.1.0
 // This program models the orbital trajectory of a CAD model about the Earth
 // Authours : Arvin T. Matthieu D. Jessie A. 
 // Created on 11 May 2018
-// Last modified 14 May 2018
+// Last modified 18 May 2018
 // Table of contents 
 //  Part 1 : Definition of proprietary functions
 //      Part 1a : trace_traj function

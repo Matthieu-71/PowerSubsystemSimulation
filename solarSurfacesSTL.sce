@@ -63,11 +63,19 @@ function [activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs,
     aSWriteIndex = aSWriteIndex - 1; // Decrements the counter object
 endfunction
 
-function [x] = onEndButton(crntUnitState)
+function [x] = onEndButton()//(crntUnitState,alignVec,constVec)
     // This function allows the user to proceed to the next step of the program
-    disp(norm(crntUnitState))
     if norm(crntUnitState) == 0 then
         error(5,'No units selected!');
+        x = 0;
+    elseif norm(alignVec) == 0 then
+        error(6,'Aligned vector is undefined!');
+        x = 0;
+    elseif norm(constVec) == 0 then
+        error(7,'Constraint vector is undefined!');
+        x = 0;
+    elseif activSurfs == [] then
+        error(8,'No solar panels!');
         x = 0;
     else
         x = 1; // Variable needed to proceed to next
@@ -169,7 +177,6 @@ function [crntUnitState] = unitRadioButton(crntUnitState)
     set(h_centi,'value',nextState(2)); // | Sets the radiobuttons to their new state
     set(h_milli,'value',nextState(3)); // |
     crntUnitState = nextState;
-    disp(crntUnitState)
 endfunction
 
 t = stlread(stlFilePath,isBinary); // Reads the STL file designated in the previous GUI
@@ -249,7 +256,7 @@ h_milli = uicontrol(g,'style','radiobutton','position', [280 360  50  20],'strin
 
 h_pushR = uicontrol(g,'style','pushbutton','position', [550 250  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onRightButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object right 
 h_pushL = uicontrol(g,'style','pushbutton','position', [550 200  50 50],'callback', '[activSurfs, deactSurfs,aSWriteIndex,tcolor] = onLeftButton(activSurfs, deactSurfs,aSWriteIndex,t,tcolor)') // GUI object for moving object left
-h_pushE = uicontrol(g,'style','pushbutton','position', [  0   0 350 50],'callback', '[x] = onEndButton(crntUnitState)'); // GUI object for pushbutton to next step
+h_pushE = uicontrol(g,'style','pushbutton','position', [  0   0 350 50],'callback', '[x] = onEndButton()'); // GUI object for pushbutton to next step
 h_radSt = uicontrol(g,'style','pushbutton','position', [290  80  60 30],'callback', '[alignVec] = saveRadDir()'); // GUI object for saving radial outward direction
 h_orbSt = uicontrol(g,'style','pushbutton','position', [290  50  60 30],'callback', '[constVec] = saveOrbDir()'); // GUI object for saving orbit normal direction
 
