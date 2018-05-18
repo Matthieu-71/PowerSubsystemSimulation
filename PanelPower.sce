@@ -26,7 +26,7 @@ end
 
 //Parameters
 S=1366; // [W/m^2] (later change this to function of time)
-nu = strtod('5_text6'); //Panel efficiency
+nu = 0.2; //Panel efficiency
 //Changing the solar constant to match dimensions of the satellite
 if      crntUnitState(1,1) == 1 then
     panelunits='m';
@@ -56,10 +56,10 @@ sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)
 PowerSurf = []; //empty array, power computed by each surface
 for i = 1: length(activSurfs)
     for t = 1: length(pos_eci)
-    VF = (CL_dot(n(1),sat_sun_qsw(1))/(norm(n(1))*norm(sat_sun_qsw(1)))); //View factor from surface to sun
-    PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power of each surface at each time step
+    VF = (CL_dot(n(i),(sat_sun_qsw(t)))/(norm(n(i))*norm(sat_sun_qsw(t)))); //View factor, i.e cos(theta)
+    PowerSurf(i,t) = abs(nu*S*SurfArea(i)*VF); //Power of each surface at each time step
     end
 end
-
+figure
 
 
