@@ -149,7 +149,6 @@ for i = 1:max(size(pos_eci)) // For mission duration
     misstime=i*tstep;
     timestring=string(misstime)
     [xAtt,yAtt,zAtt] = AttitudeAdjust(xAtt,yAtt,zAtt,[],[],[pos_eci(1,i) pos_eci(2,i) pos_eci(3,i)],[vel_eci(1,i) vel_eci(2,i) vel_eci(3,i)]);
-    scf(1)
     xIns = (xAtt*enlarge) - pos_eci(1,i); // |
     yIns = (yAtt*enlarge) + pos_eci(2,i); // | Changes the position of all vertices to place the object in the frame
     zIns = (zAtt*enlarge) + pos_eci(3,i); // |
@@ -163,6 +162,5 @@ for i = 1:max(size(pos_eci)) // For mission duration
     h.auto_clear = "off"; // Equivalent of MATLAB's hold on command
     plot3d(-xIns,yIns,list(zIns,tcolor)); // Plots the STL model in the frame
     h.isoview="on";//easier on the eyes, isometric view of plot
-    sleep(100060) // Pauses the loop for 16.6-7 ms (60 Hz animation)
-end
+    sleep(1000/60) // Pauses the loop for 16.6-7 ms (60 Hz animation)
 end
