@@ -139,7 +139,7 @@ pos_sun = CL_eph_sun(cjd);
 
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
-
+exec(pwd()+'\PanelPower.sce',-1)//execute Power output
 // Part 4d --- Motion of the satellite ----------------------------------------
 for i = 1:max(size(pos_eci)) // For mission duration
     if i > 1 // Make sure spacecraft has done one orbit
