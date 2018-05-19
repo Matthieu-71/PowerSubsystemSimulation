@@ -129,17 +129,18 @@ CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 
 //  PART 4 --- CREATION OF THE SOLAR SYSTEM AND SIMULATION --------------------
 
-
-//  Part 4a --- Creation of the Earth spheroid --------------------------------
+//  Part 4a --- Creation of the 'space' environment ---------------------------
+pos_sun = CL_eph_sun(cjd);
+exec(pwd()+'\PanelPower.sce',-1)//execute Power output
+//  Part 4b --- Creation of the Earth spheroid --------------------------------
 fig2 = scf(); 
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 
-//  Part 4b --- Creation of the 'space' environment ---------------------------
-pos_sun = CL_eph_sun(cjd);
 
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
-exec(pwd()+'\PanelPower.sce',-1)//execute Power output
+
+
 // Part 4d --- Motion of the satellite ----------------------------------------
 for i = 1:max(size(pos_eci)) // For mission duration
     if i > 1 // Make sure spacecraft has done one orbit

@@ -27,7 +27,7 @@ n=n';
 
 //Parameters
 S=1366; // [W/m^2] (later change this to function of time)
-nu = 0.2; //Panel efficiency
+nu = eff; //Panel efficiency
 //Changing the solar constant to match dimensions of the satellite
 if      crntUnitState(1,1) == 1 then
     panelunits='m';
@@ -46,12 +46,20 @@ sat_sun_eci = pos_sun - pos_eci;//Sat-Sun in ECI
 sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)//Sat-Sun in QSW
 
 PowerSurf = []; //empty array, power computed by each surface
-figure
+scf();//new figure
+// Eclipse intervals (umbra) 
+interv = CL_ev_eclipse(cjd, pos_eci, pos_sun, typ = "umb");
+
 for i = 1: length(activSurfs)
     for t = 1:max(size(pos_eci))
-    VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, i.e cos(theta)
+    VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, (i.e cos(theta) factor )
     PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power of each surface at each time step
+        if VF <= 0
+            PowerSurf(i,t)=0;//can't have negative power
+        end
     end
     plot(PowerSurf(i,:))
+    legends(['Surface '+ string(i)],i,opt='ur')
 end
+
 

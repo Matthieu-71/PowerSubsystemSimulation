@@ -45,7 +45,7 @@ function [xAtt,yAtt,zAtt] = AttitudeAdjust(xold,yold,zold,alignVec,constVec,r,v)
         R = [qsw_x;qsw_y;qsw_z]; // Assemble the transformation matrix
 
         // PART 4: Rotate the stl model to align with QSW {X,Y,Z}
-        [row, col] = size(t.x); // Gather the size of the STL data
+        [row, col] = size(xold); // Gather the size of the STL data
         xAtt = xold; // Redefine the STL x data for attitude determination use
         yAtt = yold; // Redefine the STL y datafor attitude determination use
         zAtt = zold; // Redefine the STL z datafor attitude determination use
