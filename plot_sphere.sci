@@ -37,12 +37,8 @@ imSize = size(im);
 
 // Compute the latitude and longtide of each surface using the first vertex
 tic()
-lat = acos(zz(2,:)/r);
-lat = lat*(180/%pi);
-lon = atan(yy(2,:),xx(2,:)) + %pi;
-lon = lon*(180/%pi);
-
-
+lat = acos(zz(2,:)/r)*(180/%pi);
+lon = (atan(yy(2,:),xx(2,:)) + %pi)*(180/%pi);
 
 for i = 1:col
     imLat = round(lat(i)*imSize(1)/180) + 1;
