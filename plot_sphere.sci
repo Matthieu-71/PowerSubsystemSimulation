@@ -39,13 +39,13 @@ imSize = size(im);
 tic()
 lat = acos(zz(2,:)/r)*(180/%pi);
 lon = (atan(yy(2,:),xx(2,:)) + %pi)*(180/%pi);
+imLat = round(lat*imSize(1)/180) + 1;
+imLon = round(lon*imSize(2)/360);
 
 for i = 1:col
-    imLat = round(lat(i)*imSize(1)/180) + 1;
-    imLon = round(lon(i)*imSize(2)/360);
-    r = strtod(string(im(imLat,imLon,1))); // to change from 1x1 to scalar
-    g = strtod(string(im(imLat,imLon,2)));
-    b = strtod(string(im(imLat,imLon,3)));
+    r = strtod(string(im(imLat(i),imLon(i),1))); // to change from 1x1 to scalar
+    g = strtod(string(im(imLat(i),imLon(i),2)));
+    b = strtod(string(im(imLat(i),imLon(i),3)));
     colour(i) = color(r,g,b);
 
     if (i-fix(i./1000).*1000) == 0
