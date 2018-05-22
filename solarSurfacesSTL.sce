@@ -274,14 +274,14 @@ set(h_title, 'string', 'Solar Panel Surface Selector', 'fontsize', 24,'horizonta
 set(h_text1, 'string', msprintf('There are %0.0f surfaces in total, select the ones that are solar panels',length(tcolor))); // Writes the description sentence 
 set(h_text2, 'string', 'Non-solar-panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Writes the header of the left listbox
 set(h_text3, 'string', 'Solar panel surfaces', 'fontsize', 16,'horizontalalignment', 'center'); // Wrties the header of the right listbox
-set(h_text4, 'string', 'Enter radial outward direction : ', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
-set(h_text5, 'string', 'Enter orbit normal direction : ', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
-set(h_text6, 'string', 'Enter solar panel efficiency, number between 0 and 1 : ', 'fontsize', 12); // Wrties the prompt for the panel efficiency
+set(h_text4, 'string', ' Zenith Direction : ', 'fontsize', 12); // Wrties the prompt for the radial outward surface 
+set(h_text5, 'string', ' Orbit Normal direction : ', 'fontsize', 12); // Wrties the prompt for the orbit normal surface 
+set(h_text6, 'string', ' Solar Panel Efficiency, number between 0 and 1 : ', 'fontsize', 12); // Wrties the prompt for the panel efficiency
 set(h_text10,'string', 'Select the units of the model : ', 'fontsize', 12); // Wrties the prompt for area units
 
 set(h_pushR, 'string', '>>'); // Writes to the right pushbutton
 set(h_pushL, 'string', '<<'); // Writes to the left pushbutton
-set(h_pushE, 'string', 'End Selection Process'); // Write to the end pushbutton
+set(h_pushE, 'string', ' End Selection Process'); // Write to the end pushbutton
 set(h_radSt, 'string', 'Save' ) // Writes to pushbutton
 set(h_orbSt, 'string', 'Save' ) // Writes to pushbutton
 

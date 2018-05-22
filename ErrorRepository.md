@@ -19,3 +19,5 @@ n | Message                         | Reason
 7 | Constraint vector is undefined! | The user has not defined the orbit normal direction
 
 8 | No solar panels!                | The user has not selected any solar panels
+
+9 | Incorrect efficiency value!     | The value for efficiency of the solar panels is greater than 1 or less than 0

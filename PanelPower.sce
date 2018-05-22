@@ -7,7 +7,6 @@
 xVertices = t.x(:,activSurfs) // Gets the x position of the vertices of the solar panel surfaces
 yVertices = t.y(:,activSurfs) // Gets the y position of the vertices of the solar panel surfaces
 zVertices = t.z(:,activSurfs) // Gets the z position of the vertices of the solar panel surfaces
-
 n = zeros(length(activSurfs),3) // Initialize matrix for storage of normal vectors
 for i = 1:length(activSurfs)
     // For each surface this loop computes the normal vector
@@ -23,35 +22,61 @@ for i = 1:length(activSurfs)
   surfp=(Lenxy+Lenxz+Lenyz)/2;// Half the Perimeter
   SurfArea(i)=sqrt(surfp*(surfp-Lenxy)*(surfp-Lenxz)*(surfp-Lenyz));//Heron's Formula for Area of a triangle
 end
-n=n';
+n=n';//transpose n
 
 //Parameters
 S=1366; // [W/m^2] (later change this to function of time)
-nu = 0.2; //Panel efficiency
+nu = eff; //Panel efficiency
 //Changing the solar constant to match dimensions of the satellite
 if      crntUnitState(1,1) == 1 then
-    panelunits='m';
+    //panel units m
     //S=1366 [W/m^2]
 else if crntUnitState(1,2) == 1 then
-    panelunits='cm';
+    //panel units cm
     S = S*1e-4; //[W/cm^2]
 else
-    panelunits='mm';
+    //panel units mm
     S = S*1e-6; //[W/mm^2]           
 end
 end
 
 sat_sun_eci = pos_sun - pos_eci;//Sat-Sun in ECI
-
 sat_sun_qsw = CL_fr_inertial2qsw(pos_eci,vel_eci,sat_sun_eci)//Sat-Sun in QSW
 
 PowerSurf = []; //empty array, power computed by each surface
-figure
-for i = 1: length(activSurfs)
-    for t = 1:max(size(pos_eci))
-    VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, i.e cos(theta)
-    PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power of each surface at each time step
+scf();//new figure
+eclinterv = CL_ev_eclipse(cjd, pos_eci*1e3, pos_sun, typ = "umb");//Eclipse Interval times
+eclnum = size(eclinterv, "c");//total number of eclipses
+
+//determining color gradient based on number of surfaces selected
+col=[];//init col vector
+colgrad=1/length(activSurfs);
+
+for i = 1 : length(activSurfs)
+    for t = 1 : max(size(pos_eci))
+//Calculate the Power Generated at each timestep for each surface in this loop
+      VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, (i.e cos(theta) factor )
+      PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power
+        if VF < 0//no power generated when viewvactors are negative
+            PowerSurf(i,t)=0;
+        end
     end
-    plot(PowerSurf(i,:))
+//Matches eclipse times index to timestep index and removes power output
+      for count = 1 : eclnum
+       ecltimes = find(cjd > eclinterv(1,count) & cjd < eclinterv(2,count));
+       PowerSurf(i,ecltimes) = 0;
+      end
+  col(i)=i*colgrad;
+  plot(PowerSurf(i,:),'--','color',[0 0 col(i)])
+  bb = gca();
+  xlegend(i) = strcat(['Panel #', string(i)]);
+  bb.auto_clear = "off"; // Equivalent of MATLAB's hold on command
+  //bb.color_map = springcolormap(32);
+  col=col+0.1;
 end
+totalpower = sum(PowerSurf,'r');//Combined output of all panel surfaces
+plot(totalpower,'r')
+legend(xlegend, 'Total Power')
+xlabel('Mission Time');
+ylabel('Power Output [W]');
 

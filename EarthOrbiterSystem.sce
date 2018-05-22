@@ -65,10 +65,8 @@ clc // Clear unimportant warnings from console
 // Use the celestLab constants for these
 AU      = CL_dataGet("au")/10^3  // Definition of an astronomical unit [km]
 mu      = CL_dataGet('body.Earth.mu');//Grav. Parameter [m^3/s^2]
-RSun    = 695700                 // Radius of the Sun [km]
 REarth  = 6378                   // Radius of the Earth [km]
-LSun    = 3.828e26               // Luminosity of the Sun [W/m^2]
-frame   = 10e3;                  // Dimension of the data bounds [km]
+frame   = 1e4;                  // Dimension of the data bounds [km]
 // Part 2b --- initialization of orbit related parameters ---------------------
 // This part promts the user to input the Keplerian orbital element, by default the program uses that of the ISS
 desc = list(..
@@ -86,16 +84,15 @@ TP = 2*%pi*sqrt(aa^3/mu);//orbital period [seconds]
 kepCoeff0 = [aa; ec; in*(%pi)/180; wp*(%pi)/180; ra*(%pi)/180; ma*(%pi)/180]; // Keplerian elements of the orbit
 // aa-semimajor axis [km], ec-eccentricity, in-inclination [deg], ra-right ascension of the ascending node [deg], wp-argument of perigee [deg], ma-mean anomaly [deg]
 
-// Part 2c----time and perturbation related parameters-------------------------
-//prompt the user for mission start time, date, and duration
-dt = getdate(); // Gets date and time information
+// Part 2c----time and perturbation related parameters----------------------;
+dt = getdate()
 desc2 = list(..
 CL_defParam("Start year",           val = dt(1)),..
 CL_defParam("Start month",          val = dt(2)),..
 CL_defParam("Start day",            val = dt(6)),..
-CL_defParam("Start hour",           val = dt(7)),..
-CL_defParam("Start minute",         val = dt(8)),..
-CL_defParam("Start second",         val = dt(9)),..
+CL_defParam("Start hour",           val = 12),..
+CL_defParam("Start minute",         val = 0),..
+CL_defParam("Start second",         val = 0),..
 CL_defParam("Mission duration",     val = 3/24,        units = ['days']),..
 CL_defParam("Time step",            val = 10,       units = ['seconds']));
 [YYYY, MM, DD, HH,tMin,tSec,xduration,tstep] = CL_inputParam(desc2);
@@ -129,17 +126,18 @@ CL_plot_ephem(pos_ecf, color_id=color("indianred1"));// Plot ground tracks
 
 //  PART 4 --- CREATION OF THE SOLAR SYSTEM AND SIMULATION --------------------
 
-
-//  Part 4a --- Creation of the Earth spheroid --------------------------------
-fig2 = scf(); 
+//  Part 4a --- Creation of the 'space' environment ---------------------------
+pos_sun = CL_eph_sun(cjd);//Sun position in ECI coordinates
+exec(pwd()+'\PanelPower.sce',-1)//execute Power output
+//  Part 4b --- Creation of the Earth spheroid --------------------------------
+scf(); 
 plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
 
-//  Part 4b --- Creation of the 'space' environment ---------------------------
-pos_sun = CL_eph_sun(cjd);
 
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
 param3d(pos_eci(1,:),pos_eci(2,:),pos_eci(3,:)); 
-exec(pwd()+'\PanelPower.sce',-1)//execute Power output
+
+
 // Part 4d --- Motion of the satellite ----------------------------------------
 for i = 1:max(size(pos_eci)) // For mission duration
     if i > 1 // Make sure spacecraft has done one orbit
