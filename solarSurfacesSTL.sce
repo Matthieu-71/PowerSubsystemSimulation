@@ -5,6 +5,9 @@ crntUnitState = zeros(1,3); // Object saving the states of the units of the mode
 
 function [eff] = efficiency()
     eff = strtod(h_edit1.string);
+    if eff < 0 | eff > 1 then
+        error(9,'Incorrect efficiency value!');
+    end
     disp(eff)
 endfunction
 
