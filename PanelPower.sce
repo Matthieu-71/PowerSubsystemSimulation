@@ -48,8 +48,10 @@ scf();//new figure
 eclinterv = CL_ev_eclipse(cjd, pos_eci*1e3, pos_sun, typ = "umb");//Eclipse Interval times
 eclnum = size(eclinterv, "c");//total number of eclipses
 
+//determining color gradient based on number of surfaces selected
+col=[];//init col vector
+colgrad=1/length(activSurfs);
 
-col=0.1;//color
 for i = 1 : length(activSurfs)
     for t = 1 : max(size(pos_eci))
 //Calculate the Power Generated at each timestep for each surface in this loop
@@ -64,7 +66,8 @@ for i = 1 : length(activSurfs)
        ecltimes = find(cjd > eclinterv(1,count) & cjd < eclinterv(2,count));
        PowerSurf(i,ecltimes) = 0;
       end
-  plot(PowerSurf(i,:),'--','color',[0 col .2])
+  col(i)=i*colgrad;
+  plot(PowerSurf(i,:),'--','color',[0 0 col(i)])
   bb = gca();
   xlegend(i) = strcat(['Panel #', string(i)]);
   bb.auto_clear = "off"; // Equivalent of MATLAB's hold on command
