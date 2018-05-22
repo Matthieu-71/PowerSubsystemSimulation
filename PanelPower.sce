@@ -49,7 +49,7 @@ eclinterv = CL_ev_eclipse(cjd, pos_eci*1e3, pos_sun, typ = "umb");//Eclipse Inte
 eclnum = size(eclinterv, "c");//total number of eclipses
 
 
-
+col=0.1;//color
 for i = 1 : length(activSurfs)
     for t = 1 : max(size(pos_eci))
 //Calculate the Power Generated at each timestep for each surface in this loop
@@ -64,14 +64,15 @@ for i = 1 : length(activSurfs)
        ecltimes = find(cjd > eclinterv(1,count) & cjd < eclinterv(2,count));
        PowerSurf(i,ecltimes) = 0;
       end
-  plot(PowerSurf(i,:),'--')
+  plot(PowerSurf(i,:),'--','color',[0 col .2])
   bb = gca();
   xlegend(i) = strcat(['Panel #', string(i)]);
   bb.auto_clear = "off"; // Equivalent of MATLAB's hold on command
   //bb.color_map = springcolormap(32);
+  col=col+0.1;
 end
 totalpower = sum(PowerSurf,'r');//Combined output of all panel surfaces
-plot(totalpower)
+plot(totalpower,'r')
 legend(xlegend, 'Total Power')
 xlabel('Mission Time');
 ylabel('Power Output [W]');
