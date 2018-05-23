@@ -1,5 +1,8 @@
 //clear; clc; clf
 
+body = 'Earth';
+// other possible bodies, Mercury, Venus, Earth, Moon, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto?
+
 deff("[x,y,z]=sph(alp,tet)",[..
 "x = r*cos(alp).*cos(tet)+orig(1)*ones(tet)";..
 "y = r*cos(alp).*sin(tet)+orig(2)*ones(tet)";..
