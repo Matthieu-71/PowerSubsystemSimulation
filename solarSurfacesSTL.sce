@@ -112,26 +112,6 @@ function [] = activeSelect(t,tcolor,activSurfs)
     a = gca();
     a.isoview = 'on'; // Changes the view to isometric 
 endfunction
-//
-//function [orbNorDir,arrow] = selectONSurf(t,allSurface,orbNorDir)
-//    slt = h_orSur.value;
-//    xVertices = t.x(:,slt) // | 
-//    yVertices = t.y(:,slt) // | Gets the coordinates of the vertices of the solar panel surfaces
-//    zVertices = t.z(:,slt) // | 
-//    xy = [(xVertices(1)-xVertices(2)) (yVertices(1)-yVertices(2)) (zVertices(1)-zVertices(2))]
-//    xz = [(xVertices(1)-xVertices(3)) (yVertices(1)-yVertices(3)) (zVertices(1)-zVertices(3))]
-//    n = cross(xy,xz) // Computes the normal vector
-//    n = n/sqrt(n(1)^2 + n(2)^2 + n(3)^2); // Computes unit vector
-//    orbNorDir = n;
-//    n = n*20; // To be changed, calculates the size of the arrow
-//    scf(0); // Sets figure no.0 as the current editable 
-//    delete("all") // Replots the figure with the new arrow
-//    plot3d(-t.x,t.y,list(t.z,tcolor)); 
-//    xarrows([0 n(1)],[0 n(2)],[0 n(3)],10,3); // Plots the new arrow
-//    a = gca();
-//    a.isoview = 'on'; // Changes the view to isometric 
-//    orbNorDir = n;
-//endfunction
 
 function [alignVec] = saveRadDir()
     // This function retrieves the components of the radial outward direction and stores them in the appropriate object 
@@ -209,8 +189,6 @@ plot3d(-t.x,t.y,list(t.z,tcolor)); // Plots the model
 f = get("current_figure") // Gets the handle of the current figure window
 scrnSize = get(0, "screensize_px"); // Gets the user's screen size
 f.figure_position = [scrnSize(3)/2 0]; // Sets the figure at the top and towards the middel of the user's screen
-
-
 a = gca()
 a.isoview = "on" // Sets the graphic window to an isometric view
 
@@ -323,9 +301,4 @@ s = []; // Resets the string
 for i = 1:length(allSurface)
     // Makes the new list to output to the direction listboxs
     s = s + msprintf('@s %0.0f |',allSurface(i)),
-
 end
-
-// Ask for components of the axis aligned with the zenith vector
-// alignVec - variable for the components of the aligned axis (points towards zenith, radially outwards)
-// constVec - variable for the components of the constrained axis (points toward (roughly) orbit normal)
