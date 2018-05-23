@@ -1,4 +1,4 @@
-clear; clc; clf
+//clear; clc; clf
 
 function [] = plot_sphere(r,n,d)
     // Copyright (c) York University 2018   Authors: Matthieu D. and Jessie A. 
@@ -28,11 +28,12 @@ deff("[x,y,z]=sph(alp,tet)",[..
 
 r = 6378; // Radius of the Earth [km]
 orig = [0 0 0];
-div = 200; // Number of divisions, affect resolution of sphere 
+div = 150; // Number of divisions, affect resolution of sphere 
 [xx,yy,zz]=eval3dp(sph,linspace(-%pi/2,%pi/2,div),linspace(0,%pi*2,div));
 [row col] = size(zz);
 colour = zeros(1,col);
 im = imread(pwd()+'\land_shallow_topo_2048.jpg');
+//im = imread(pwd()+'\19113660_10212876050593648_171937706493449871_n.jpg');
 imSize = size(im);
 
 // Compute the latitude and longtide of each surface using the first vertex
@@ -60,5 +61,5 @@ clf();
 plot3d(xx,yy,list(zz,colour))
 a = gca();
 a.isoview = 'on'; // Changes the view to isometric 
-h=get("hdl") //get handle on current entity (here the surface)
+h = get("hdl") //get handle on current entity (here the surface)
 h.color_mode = -1;

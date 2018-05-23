@@ -131,7 +131,8 @@ pos_sun = CL_eph_sun(cjd);//Sun position in ECI coordinates
 exec(pwd()+'\PanelPower.sce',-1)//execute Power output
 //  Part 4b --- Creation of the Earth spheroid --------------------------------
 scf(); 
-plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
+//plot_sphere(REarth,50,[0 0 0]) // Plots the Earth as a sphere
+exec(pwd()+'\plot_sphere.sci',-1); // Executes attitude script
 
 
 //  Part 4c --- Insertion of the orbital trajectory ---------------------------
