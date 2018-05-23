@@ -104,6 +104,12 @@ function [x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)
     end
 endfunction
 
+function [Xanimate] = aniCheckBox(Xanimate)
+    Xanimate = h_anSlt.value;
+    disp(Xanimate)
+endfunction
+
+
 x = 0;
 crntPath = get_absolute_file_path("browseSTL.sce"); // String of the path where this program is located
 inFilePath  = crntPath; // Initializes the input file path to the current path, just so that it has a value
@@ -134,7 +140,7 @@ h_text5 = uicontrol(f,'style','text', 'position', [0 40 280 20]); // GUI object 
 h_text6 = uicontrol(f,'style','text', 'position', [0 20 280 20]); // GUI object for animation prompt
 h_bnSlt = uicontrol(f,'style','checkbox', 'position', [280 60 20 20], 'callback', '[isBinary] = binCheckBox(isBinary)'); // GUI object to indicate binary format
 h_inSlt = uicontrol(f,'style','checkbox', 'position', [280 40 20 20], 'callback', '[inUsed] = inpCheckBox(inUsed)'); // GUI object to indicate presence of input file
-h_anSlt = uicontrol(f,'style','checkbox', 'position', [280 20 20 20], 'callback', '[inUsed] = aniCheckBox(inUsed)'); // GUI object to indicate animation desire
+h_anSlt = uicontrol(f,'style','checkbox', 'position', [280 20 20 20], 'callback', '[Xanimate] = aniCheckBox(Xanimate)'); // GUI object to indicate animation desire
 h_push4 = uicontrol(f,'style','pushbutton','position', [525 20 75 60],'callback', '[x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)'); // GUI object for the pushbutton allowing access to the next part of the program
 
 // Definition of uicontrol object properties ----------------------------------
