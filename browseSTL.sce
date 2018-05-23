@@ -56,9 +56,39 @@ function [Xanimate] = inpCheckBox(Xanimate)
     Xanimate = h_inSlt.value // Sets the value of the checkbox to the object
 endfunction
 
+function [Xanimate] = aniCheckBox(Xanimate)
+    Xanimate = h_anSlt.value;
+endfunction
 
-function [x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)
+function [bodyNo] = bodyNoSelect()
+    bodyNo = h_bdSlt.value; 
+endfunction
+
+function [x,bodyStr] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed,bodyNo)
     // This function is called when the user pushed the next button, it runs a few checks and allows the program to proceed to the next step
+    select bodyNo
+    case 1
+        bodyStr = 'Mercury';
+    case 2
+        bodyStr = 'Venus'; 
+    case 3
+        bodyStr = 'Earth';
+    case 4
+        bodyStr = 'Moon';
+    case 5
+        bodyStr = 'Mars';
+    case 6
+        bodyStr = 'Jupiter';  
+    case 7
+        bodyStr = 'Saturn';  
+    case 8
+        bodyStr = 'Uranus';  
+    case 9
+        bodyStr = 'Neptune';  
+    case 10
+        bodyStr = 'Pluto'; 
+    end
+
     suffix = part(stlFilePath,(length(stlFilePath)-3:length(stlFilePath))); // Gets the suffix of the stlFilePath
     if suffix == ".stl" then
         // If the suffix is .stl, then the check object is set to one
@@ -92,23 +122,12 @@ function [x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)
         error(4,'File is not in an txt format!');
         runCheck = 0;
     end
-    
-    //disp(runCheck)
+
     if runCheck == 1 then
         x = 1;
         close(f)
-        //exec C:\Users\matth\Documents\SciLab_CelestLab_work\STL_solarPanelSelect.sce;
-//        path1 = strcat([crntPath,"STL_solarPanelSelect.sce"])
-//        //disp(path1)
-//        exec(path1)
     end
 endfunction
-
-function [Xanimate] = aniCheckBox(Xanimate)
-    Xanimate = h_anSlt.value;
-    disp(Xanimate)
-endfunction
-
 
 x = 0;
 crntPath = get_absolute_file_path("browseSTL.sce"); // String of the path where this program is located
@@ -118,6 +137,8 @@ stlFilePath = crntPath; // Initializes the STL file path to the current path, ju
 isBinary = 'ascii'; // The format of the STL file, by default ascii
 inUsed = 0; // Indicates if an input file is used, if == 0 then no input file is used, if == 1 then an input file is used.
 Xanimate = 0; // Inidicates if the user wants the orbit animation to be shown, if ==0 not shown.
+bodyNo = 3; // Indicates the bodyNo that the spacecraft orbits around, by default the Earth is selected
+bodyStr = 'Earth';
 
 f = figure(); // Creates a figure
 f.screen_position = [0 0]; // Sets the GUI to appear at the top left of the screen
@@ -138,10 +159,12 @@ h_push3 = uicontrol(f,'style','pushbutton', 'position', [525 80 75 20],'callback
 h_text4 = uicontrol(f,'style','text', 'position', [0 60 280 20]); // GUI object for STL format prompt
 h_text5 = uicontrol(f,'style','text', 'position', [0 40 280 20]); // GUI object for input file presence prompt
 h_text6 = uicontrol(f,'style','text', 'position', [0 20 280 20]); // GUI object for animation prompt
-h_bnSlt = uicontrol(f,'style','checkbox', 'position', [280 60 20 20], 'callback', '[isBinary] = binCheckBox(isBinary)'); // GUI object to indicate binary format
-h_inSlt = uicontrol(f,'style','checkbox', 'position', [280 40 20 20], 'callback', '[inUsed] = inpCheckBox(inUsed)'); // GUI object to indicate presence of input file
-h_anSlt = uicontrol(f,'style','checkbox', 'position', [280 20 20 20], 'callback', '[Xanimate] = aniCheckBox(Xanimate)'); // GUI object to indicate animation desire
-h_push4 = uicontrol(f,'style','pushbutton','position', [525 20 75 60],'callback', '[x] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed)'); // GUI object for the pushbutton allowing access to the next part of the program
+h_text7 = uicontrol(f,'style','text', 'position', [0  0 200 20]); // GUI object for bodyNo selectio prompt
+h_bnSlt = uicontrol(f,'style','checkbox', 'position', [280 60  20 20], 'callback', '[isBinary] = binCheckBox(isBinary)'); // GUI object to indicate binary format
+h_inSlt = uicontrol(f,'style','checkbox', 'position', [280 40  20 20], 'callback', '[inUsed] = inpCheckBox(inUsed)'); // GUI object to indicate presence of input file
+h_anSlt = uicontrol(f,'style','checkbox', 'position', [280 20  20 20], 'callback', '[Xanimate] = aniCheckBox(Xanimate)'); // GUI object to indicate animation desire
+h_bdSlt = uicontrol(f,'style','listbox', 'position',  [200  0 100 20], 'callback', '[bodyNo] = bodyNoSelect()'); // GUI object for bodyNo selection
+h_push4 = uicontrol(f,'style','pushbutton','position', [525 20 75 60],'callback', '[x,bodyStr] = nextButton(outFilePath,inFilePath,stlFilePath,inUsed,bodyNo)'); // GUI object for the pushbutton allowing access to the next part of the program
 
 // Definition of uicontrol object properties ----------------------------------
 set(h_title, 'string', 'Simulation files selector', 'fontsize', 14,'horizontalalignment', 'center'); // Writes the header of the 
@@ -163,5 +186,9 @@ set(h_push3, 'string', 'Browse', 'fontsize', 12); // Writes browse to the push b
 set(h_text4, 'string', 'Check this box if the STL file is in binary format :', 'fontsize', 12); // Prompt for the STL format checkbox
 set(h_text5, 'string', 'Check this box if an input file is used : ', 'fontsize', 12); // Prompt for the input file presence checkbox
 set(h_text6, 'string', 'Check this box for animation of the orbit : ', 'fontsize', 12); // Prompt for the animation desire checkbox
+
+set(h_text7, 'string', 'Select main bodyNo : ', 'fontsize', 12); // Prompt for bodyNo selection
+set(h_bdSlt, 'string', 'Mercury | Venus | Earth  | Moon  | Mars | Jupiter | Saturn  | Uranus | Neptune | Pluto');
+set(h_bdSlt, 'value', bodyNo);
 
 set(h_push4, 'string', 'Next', 'fontsize', 12); // Write next to the push button
