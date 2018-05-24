@@ -62,10 +62,45 @@ clc // Clear unimportant warnings from console
 
 
 // Part 2a --- initialization of frame related parameters ---------------------
-// Use the celestLab constants for these
+// Changing grav. parameter, solar constant, and radius, depending on master body
+//Grav. Parameter [m^3/s^2]
+//radius [km]
+//S [W/m^2]
+L = 3.828e26; //Luminosity of the sun, in W
+
+select bodyStr
+case 'Mercury'
+    mu = CL_dataGet("body.Mercury.mu");
+    r = CL_dataGet("body.Mercury.eqRad")/1000;
+case 'Venus'
+    mu = CL_dataGet('body.Venus.mu');
+    r = CL_dataGet("body.Venus.eqRad")/1000;
+case 'Earth'
+    mu = CL_dataGet('body.Earth.mu');
+    r  = CL_dataGet("body.Earth.eqRad")/1000;
+case 'Moon'
+    mu = CL_dataGet('body.Moon.mu');
+    r = CL_dataGet("body.Moon.eqRad")/1000;
+case 'Mars'
+    mu = CL_dataGet('body.Mars.mu');
+    r = CL_dataGet("body.Mars.eqRad")/1000;
+case 'Jupiter'
+    mu = CL_dataGet('body.Jupiter.mu');
+    r = CL_dataGet("body.Jupiter.eqRad")/1000;
+case 'Saturn'
+    mu = CL_dataGet('body.Saturn.mu');
+    r = CL_dataGet("body.Saturn.eqRad")/1000;
+case 'Uranus'
+    mu = CL_dataGet('body.Uranus.mu'); 
+    r = CL_dataGet("body.Uranus.eqRad")/1000;
+case 'Neptune'
+    mu = CL_dataGet('body.Neptune.mu'); 
+    r = CL_dataGet("body.Neptune.eqRad")/1000;
+case 'Pluto'
+    mu = CL_dataGet('body.Pluto.mu');
+    r = CL_dataGet("body.Pluto.eqRad")/1000;
+end
 AU      = CL_dataGet("au")/10^3  // Definition of an astronomical unit [km]
-mu      = CL_dataGet('body.Earth.mu');//Grav. Parameter [m^3/s^2]
-REarth  = 6378                   // Radius of the Earth [km]
 frame   = 1e4;                  // Dimension of the data bounds [km]
 // Part 2b --- initialization of orbit related parameters ---------------------
 // This part promts the user to input the Keplerian orbital element, by default the program uses that of the ISS

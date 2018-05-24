@@ -26,7 +26,7 @@ n=n';//transpose n
 
 //Parameters
 S=1366; // [W/m^2] (later change this to function of time)
-nu = eff; //Panel efficiency
+eta = eff; //Panel efficiency
 //Changing the solar constant to match dimensions of the satellite
 if      crntUnitState(1,1) == 1 then
     //panel units m
@@ -56,7 +56,7 @@ for i = 1 : length(activSurfs)
     for t = 1 : max(size(pos_eci))
 //Calculate the Power Generated at each timestep for each surface in this loop
       VF = CL_dot(n(:,i),(sat_sun_qsw(:,t)))/(norm(n(:,i))*norm(sat_sun_qsw(:,t))); //View factor, (i.e cos(theta) factor )
-      PowerSurf(i,t) = nu*S*SurfArea(i)*VF; //Power
+      PowerSurf(i,t) = eta*S*SurfArea(i)*VF; //Power
         if VF < 0//no power generated when viewvactors are negative
             PowerSurf(i,t)=0;
         end
